@@ -10,13 +10,13 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 firebase.initializeApp({
-  apiKey: 'AIzaSyBhVYLGMXcO4odTzSEYayQX2NsrK-JThtg',
-  authDomain: 'rebulk-e126f.firebaseapp.com',
-  projectId: 'rebulk-e126f',
-  storageBucket: 'rebulk-e126f.appspot.com',
-  messagingSenderId: '491091502029',
-  appId: '1:491091502029:web:4b2fad7ae760506e325a84',
-  measurementId: 'G-1VF0NK2BF2'
+  apiKey: "AIzaSyBhVYLGMXcO4odTzSEYayQX2NsrK-JThtg",
+  authDomain: "rebulk-e126f.firebaseapp.com",
+  projectId: "rebulk-e126f",
+  storageBucket: "rebulk-e126f.appspot.com",
+  messagingSenderId: "491091502029",
+  appId: "1:491091502029:web:4b2fad7ae760506e325a84",
+  measurementId: "G-1VF0NK2BF2"
 })
 
 const auth = firebase.auth();
@@ -141,101 +141,120 @@ function ExerciseSelection({ selectedMuscleGroup }) {
         )}
       </div>
       )}
-      {selectedExercise && < ExercisePage exerciseName={selectedExercise}/>}
+      {selectedExercise && < ExercisePage exerciseName={selectedExercise} selectedMuscleGroup={selectedMuscleGroup}/>}
     </div>
   );
 }
 
-function ExercisePage({ exerciseName }) {
-  const exercisesRef = firestore.collection('logged');
+function ExercisePage({ exerciseName, selectedMuscleGroup }) {
   const { uid } = auth.currentUser;
-  const exerciseQuery = exercisesRef.where('musclegroup', '==', selectedMuscleGroup)
-  const [exercises] = useCollectionData(exerciseQuery, { idField: 'id' });
-  const [showSets, setShowSets] = useState(false);
-  return (
-    <div>
-      <div>
-      <button onClick={() => setShowSets(!showSets)}>
-      {showSets ? 'Hide Logged Sets' : 'Show Logged Sets'}
-      </button>
-      </div>
-      <div>
-      {showSets && <ShowLoggedSet />}
-      </div>
-    </div>
-  );
-}
-
-function ShowLoggedSet() {
-  // const dummy = useRef();
   const loggedSetsRef = firestore.collection('loggedSets');
-  const { uid } = auth.currentUser;
+  console.log(exerciseName)
   const setQuery = loggedSetsRef
-    // .where('user', '==', uid)
-    .orderBy('timestamp', 'desc')
+    .where('exercise', '==', exerciseName)
+    // .orderBy('timestamp', 'desc')
     .limit(5);
   const [loggedSets] = useCollectionData(setQuery, { idField: 'id' });
-  const [exercise, setExerciseName] = useState('');
-  const [musclegroup, setMuscleGroup] = useState('');
+  const [showSets, setShowSets] = useState(false);
   const [reps, setReps] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
   const [weight, setWeight] = useState('');
 
   const logSet = async (e) => {
     e.preventDefault();
     const { uid } = auth.currentUser;
     await loggedSetsRef.add({
-      exercise,
-      musclegroup,
+      exerciseName,
+      selectedMuscleGroup,
       reps: Number(reps),
       weight: Number(weight),
       user: uid,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     });
-    setExerciseName('');
-    setMuscleGroup('');
     setReps('');
     setWeight('');
+    setShowPopup(false);
     // dummy.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
+    <div>
+      <div>
+      <h2>{exerciseName}</h2>
+      </div>
+      <div>
+      <button onClick={() => setShowPopup(true)}>Create Log</button>
+      <button onClick={() => setShowSets(!showSets)}>
+      {showSets ? 'Hide Logged Sets' : 'Show Logged Sets'}
+      </button>
+      </div>
+      <div>
+      {showSets && <ShowLoggedSet loggedSets={loggedSets} />}
+      </div>
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h2>Create Log for {exerciseName}</h2>
+            <form onSubmit={logSet}>
+              <input
+                type="number"
+                value={reps}
+                onChange={(e) => setReps(e.target.value)}
+                placeholder="Reps"
+                required
+              />
+              <input
+                type="number"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                placeholder="Weight (kg)"
+                required
+              />
+              <div className="popup-buttons">
+                <button type="submit">Add Log</button>
+                <button type="button" onClick={() => setShowPopup(false)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* <div>
+        <form onSubmit={logSet}>
+          <input 
+            type="number"
+            value={reps} 
+            onChange={(e) => setReps(e.target.value)} 
+            placeholder='Reps' 
+            required 
+            />
+          <input 
+            type="number"
+            value={weight} 
+            onChange={(e) => setWeight(e.target.value)} 
+            placeholder='Weight (kg)' 
+            required 
+          />
+          <button type="submit" disabled={!reps || !weight}>
+            Add Log
+          </button>
+        </form>
+      </div> */}
+    </div>
+  );
+}
+
+function ShowLoggedSet({ loggedSets }) {
+  return (
     <>
       <main>
         {loggedSets && loggedSets.map(set => <LoggedSet key={set.id} set={set} />)}
-        {/* <span ref={dummy}></span> */}
       </main>
-
-      <form onSubmit={logSet}>
-        <input 
-          value={exercise} 
-          onChange={(e) => setExerciseName(e.target.value)} 
-          placeholder='Exercise Name' 
-          required 
-        />
-        <input 
-          type="number"
-          value={reps} 
-          onChange={(e) => setReps(e.target.value)} 
-          placeholder='Reps' 
-          required 
-          />
-        <input 
-          type="number"
-          value={weight} 
-          onChange={(e) => setWeight(e.target.value)} 
-          placeholder='Weight (kg)' 
-          required 
-        />
-        <button type="submit" disabled={!exercise || !reps || !weight}>
-          Add Log
-        </button>
-      </form>
     </>
   );
 }
 
 function LoggedSet({ set }) {
-  const { exercise, reps, weight, timestamp } = set;
+  const { exercise, reps, weight } = set;
   return (
     <div className="set-log">
       <p>{exercise} - {reps} reps - {weight} kg</p>
@@ -243,5 +262,6 @@ function LoggedSet({ set }) {
     </div>
   );
 }
+
 
 export default App;

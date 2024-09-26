@@ -142,3 +142,91 @@ input.error {
   border-color: #f44336; /* Red border for error */
   box-shadow: 0 0 8px rgba(244, 67, 54, 0.8); /* Light red shadow */
 }
+
+/* Popup overlay to cover the entire screen with a transparent dark background */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(18, 18, 18, 0.9); /* Dark transparent overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure the popup appears on top */
+}
+
+/* Popup content box */
+.popup-content {
+  background-color: #1e1e1e; /* Dark background to match theme */
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+  color: #e0e0e0; /* Light text for readability */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+  border: 1px solid #424242; /* Matching the theme */
+}
+
+/* Popup title */
+.popup-content h2 {
+  color: #64b5f6; /* Blue color for the title */
+  margin-bottom: 20px;
+}
+
+/* Popup buttons */
+.popup-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.popup-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* Button for submitting the log */
+.popup-buttons button[type="submit"] {
+  background-color: #1e88e5; /* Blue color for log button */
+  color: white;
+}
+
+.popup-buttons button[type="submit"]:hover {
+  background-color: #1565c0; /* Hover effect */
+}
+
+/* Button for canceling the popup */
+.popup-buttons button[type="button"] {
+  background-color: #424242; /* Dark gray background for cancel button */
+  color: #e0e0e0;
+}
+
+.popup-buttons button[type="button"]:hover {
+  background-color: #303030; /* Hover effect for cancel button */
+}
+
+/* Input fields inside the popup */
+.popup-content input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #2c2c2c; /* Dark background for inputs */
+  color: #e0e0e0;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Input focus effect inside the popup */
+.popup-content input:focus {
+  border-color: #64b5f6;  /* Blue border on focus */
+  outline: none;
+  box-shadow: 0 0 8px rgba(100, 181, 246, 0.8); /* Light blue shadow */
+}
