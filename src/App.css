@@ -1,0 +1,144 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Body styling */
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Container for main content */
+div {
+  text-align: center;
+}
+
+/* Main content styling */
+main {
+  padding: 20px;
+  background-color: #1e1e1e; /* Dark background to match theme */
+  border: 1px solid #424242; /* Subtle border */
+  color: #e0e0e0; /* Light text for readability */
+  border-radius: 8px; /* Rounded corners */
+  max-width: 800px; /* Limit width for readability */
+  margin: 20px auto; /* Center the main content */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+}
+
+/* Main title */
+h1 {
+  color: #e0e0e0;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+/* Section headers for sub-options */
+h2 {
+  color: #64b5f6;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Styling for buttons */
+button {
+  background-color: #1e88e5;
+  color: #e0e0e0;
+  border: none;
+  padding: 1rem 2rem;
+  margin: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover and focus effect for buttons */
+button:hover {
+  background-color: #1565c0;
+}
+
+button:focus {
+  outline: none;
+  background-color: #42a5f5;
+}
+
+/* Button click active effect */
+button:active {
+  background-color: #0d47a1;
+}
+
+/* Sub-option buttons */
+button.sub-option {
+  background-color: #424242;
+  color: #64b5f6;
+}
+
+button.sub-option:hover {
+  background-color: #303030;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 600px) {
+  button {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+}
+
+/* Back button styling */
+.back-button {
+  background-color: transparent;
+  border: none;
+  color: #64b5f6;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 10px;
+  position: absolute; /* Make the button stick to the top */
+  top: 10px;
+  left: 10px;
+  transition: color 0.3s ease;
+}
+
+.back-button:hover {
+  color: #42a5f5;
+}
+
+.back-button:focus {
+  outline: none;
+}
+
+/* General input field styling */
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Input focus effect */
+input:focus {
+  border-color: #64b5f6;  /* Blue border on focus */
+  outline: none;
+  box-shadow: 0 0 8px rgba(100, 181, 246, 0.8); /* Light blue shadow */
+}
+
+/* Input error styling (if needed) */
+input.error {
+  border-color: #f44336; /* Red border for error */
+  box-shadow: 0 0 8px rgba(244, 67, 54, 0.8); /* Light red shadow */
+}
