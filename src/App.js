@@ -149,22 +149,23 @@ function ExerciseSelection({ selectedMuscleGroup }) {
 function ExercisePage({ exerciseName, selectedMuscleGroup }) {
   const { uid } = auth.currentUser;
   const loggedSetsRef = firestore.collection('loggedSets');
-  console.log(exerciseName)
   const setQuery = loggedSetsRef
-    .where('exercise', '==', exerciseName)
-    // .orderBy('timestamp', 'desc')
-    .limit(5);
+  .where('exercise', '==', exerciseName)
+  // .orderBy('timestamp', 'desc')
+  .limit(5);
   const [loggedSets] = useCollectionData(setQuery, { idField: 'id' });
   const [showSets, setShowSets] = useState(false);
   const [reps, setReps] = useState('');
   const [showPopup, setShowPopup] = useState(false);
   const [weight, setWeight] = useState('');
+  // const loggedSetsArray = loggedSets || [];
+  // console.log(loggedSetsArray)
 
   const logSet = async (e) => {
     e.preventDefault();
     const { uid } = auth.currentUser;
     await loggedSetsRef.add({
-      exerciseName,
+      exercise: exerciseName,
       selectedMuscleGroup,
       reps: Number(reps),
       weight: Number(weight),
@@ -174,22 +175,22 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
     setReps('');
     setWeight('');
     setShowPopup(false);
-    // dummy.current.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <div>
       <div>
-      <h2>{exerciseName}</h2>
+        <h2>{exerciseName}</h2>
       </div>
       <div>
-      <button onClick={() => setShowPopup(true)}>Create Log</button>
-      <button onClick={() => setShowSets(!showSets)}>
-      {showSets ? 'Hide Logged Sets' : 'Show Logged Sets'}
-      </button>
+        {loggedSets && loggedSets.length > 0 && (<p>Beat {loggedSets[0].weight}kg - {loggedSets[0].reps} reps</p>)}
       </div>
       <div>
-      {showSets && <ShowLoggedSet loggedSets={loggedSets} />}
+        <button onClick={() => setShowPopup(true)}>Create Log</button>
+        <button onClick={() => setShowSets(!showSets)}>{showSets ? 'Hide Logged Sets' : 'Show Logged Sets'}</button>
+      </div>
+      <div>
+        {showSets && <ShowLoggedSet loggedSets={loggedSets} />}
       </div>
       {showPopup && (
         <div className="popup-overlay">
