@@ -89,16 +89,16 @@ function MuscleGroupSelection() {
       <div>
         <h2>Select Muscle Group</h2>
         <div>
-        <button onClick={() => btnMuscleGroupSelection("chest")}>Chest</button>
-        <button onClick={() => btnMuscleGroupSelection("shoulders")}>Shoulders</button>
+        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("chest")}>Chest</button>
+        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("back")}>Back</button>
         </div>
         <div>
-        <button onClick={() => btnMuscleGroupSelection("back")}>Back</button>
-        <button onClick={() => btnMuscleGroupSelection("legs")}>Legs</button>
+        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("shoulders")}>Shoulders</button>
+        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("legs")}>Legs</button>
         </div>
         <div>
-        <button onClick={() => btnMuscleGroupSelection("biceps")}>Biceps</button>
-        <button onClick={() => btnMuscleGroupSelection("triceps")}>Triceps</button>
+        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("triceps")}>Triceps</button>
+        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("biceps")}>Biceps</button>
         </div>
       </div>
       )}
@@ -155,25 +155,53 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
   .limit(5);
   const [loggedSets] = useCollectionData(setQuery, { idField: 'id' });
   const [showSets, setShowSets] = useState(false);
-  const [reps, setReps] = useState('');
   const [showPopup, setShowPopup] = useState(false);
-  const [weight, setWeight] = useState('');
-  // const loggedSetsArray = loggedSets || [];
-  // console.log(loggedSetsArray)
+  
+  // const lastLoggedSet = loggedSets[0]; 
+  // const lastLoggedSet = new ExerciseSets(); 
+  // if (loggedSets.length > 0)
+  //   {
+  //     lastLoggedSet = loggedSets[0];
+  //   }
 
-  const logSet = async (e) => {
+  // TODO fix this ugly shit
+  console.log(loggedSets)
+  const [firstWeight, setFirstWeight] = useState(0);
+  const [firstReps, setFirstReps] = useState(0);
+  const [secondWeight, setSecondWeight] = useState(0);
+  const [secondReps, setSecondReps] = useState(0);
+  const [thirdWeight, setThirdWeight] = useState(0);
+  const [thirdReps, setThirdReps] = useState(0);
+
+  const changeFirstWeight = (weightChange) => setFirstWeight(firstWeight + weightChange >= 0 ? firstWeight + weightChange : 0);
+  const changeFirstReps = (repChange) => setFirstReps(firstReps + repChange >= 0 ? firstReps + repChange : 0);
+  const changeSecondWeight = (weightChange) => setSecondWeight(secondWeight + weightChange >= 0 ? secondWeight + weightChange : 0);
+  const changeSecondReps = (repChange) => setSecondReps(secondReps + repChange >= 0 ? secondReps + repChange : 0);
+  const changeThirdWeight = (weightChange) => setThirdWeight(thirdWeight + weightChange >= 0 ? thirdWeight + weightChange : 0);
+  const changeThirdReps = (repChange) => setThirdReps(thirdReps + repChange >= 0 ? thirdReps + repChange : 0);
+
+  const exerciseSets = [
+    { weight: firstWeight, reps: firstReps },
+    { weight: secondWeight, reps: secondReps },
+    { weight: thirdWeight, reps: thirdReps }
+  ];
+  
+  const logExercise = async (e) => {
     e.preventDefault();
     const { uid } = auth.currentUser;
     await loggedSetsRef.add({
       exercise: exerciseName,
       selectedMuscleGroup,
-      reps: Number(reps),
-      weight: Number(weight),
       user: uid,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      exerciseSets: exerciseSets,
     });
-    setReps('');
-    setWeight('');
+    setFirstWeight(0);
+    setSecondWeight(0);
+    setThirdWeight(0);
+    setFirstWeight(0);
+    setSecondWeight(0);
+    setThirdWeight(0);
     setShowPopup(false);
   };
 
@@ -196,21 +224,91 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
         <div className="popup-overlay">
           <div className="popup-content">
             <h2>Create Log for {exerciseName}</h2>
-            <form onSubmit={logSet}>
-              <input
+            <form onSubmit={logExercise}>
+              <div className="row">
+                <p>{firstWeight}kg, for {firstReps}</p>
+                <label htmlFor="weight-input">Weight (kg):</label>
+                <input
+                  type="number"
+                  id="first-weight-input"
+                  value={firstWeight}
+                  onChange={(e) => setFirstWeight(Number(e.target.value))}
+                />
+                <button type="button" onClick={changeFirstWeight(5)}>+5kg</button>
+                <button type="button" onClick={changeFirstWeight(-5)}>-5kg</button>
+                
+                <label htmlFor="reps-input">Reps:</label>
+                <input
+                  type="number"
+                  id="first-reps-input"
+                  value={firstReps}
+                  onChange={(e) => setFirstReps(Number(e.target.value))}
+                />
+                <button type="button" onClick={changeFirstReps(1)}>+1</button>
+                <button type="button" onClick={changeFirstReps(-1)}>-1</button>
+              </div>
+
+              <div className="row">
+                <p>{secondWeight}kg, for {secondReps}</p>
+                <label htmlFor="weight-input">Weight (kg):</label>
+                <input
+                  type="number"
+                  id="second-weight-input"
+                  value={secondWeight}
+                  onChange={(e) => setSecondWeight(Number(e.target.value))}
+                />
+                <button type="button" onClick={changeSecondWeight(5)}>+5kg</button>
+                <button type="button" onClick={changeSecondWeight(-5)}>-5kg</button>
+                
+                <label htmlFor="reps-input">Reps:</label>
+                <input
+                  type="number"
+                  id="second-reps-input"
+                  value={secondReps}
+                  onChange={(e) => setSecondReps(Number(e.target.value))}
+                />
+                <button type="button" onClick={changeSecondReps(1)}>+1</button>
+                <button type="button" onClick={changeSecondReps(-1)}>-1</button>
+              </div>
+              
+              <div className="row">
+                <p>{thirdWeight}kg, for {thirdReps}</p>
+                <label htmlFor="weight-input">Weight (kg):</label>
+                <input
+                  type="number"
+                  id="third-weight-input"
+                  value={thirdWeight}
+                  onChange={(e) => setThirdWeight(Number(e.target.value))}
+                />
+                <button type="button" onClick={changeThirdWeight(5)}>+5kg</button>
+                <button type="button" onClick={changeThirdWeight(-5)}>-5kg</button>
+                
+                <label htmlFor="reps-input">Reps:</label>
+                <input
+                  type="number"
+                  id="third-reps-input"
+                  value={thirdReps}
+                  onChange={(e) => setThirdReps(Number(e.target.value))}
+                />
+                <button type="button" onClick={changeThirdReps(1)}>+1</button>
+                <button type="button" onClick={changeThirdReps(-1)}>-1</button>
+              </div>
+              {/* <input
                 type="number"
-                value={reps}
+                // value={reps}
+                value={1}
                 onChange={(e) => setReps(e.target.value)}
                 placeholder="Reps"
                 required
-              />
-              <input
+              /> */}
+              {/* <input
                 type="number"
-                value={weight}
+                // value={weight}
+                value={2}
                 onChange={(e) => setWeight(e.target.value)}
                 placeholder="Weight (kg)"
                 required
-              />
+              /> */}
               <div className="popup-buttons">
                 <button type="submit">Add Log</button>
                 <button type="button" onClick={() => setShowPopup(false)}>Cancel</button>
@@ -262,6 +360,24 @@ function LoggedSet({ set }) {
       {/* <span>{new Date(timestamp?.toDate()).toLocaleString()}</span> */}
     </div>
   );
+}
+
+class ExerciseSets {
+  constructor(
+      exercise = '', selectedMuscleGroup = '', 
+      firstWeight = 0, firstReps = 0,
+      secondWeight = 0, secondReps = 0,
+      thirdWeight = 0, thirdReps = 0,
+    ) {
+    this.exercise = exercise;
+    this.selectedMuscleGroup = selectedMuscleGroup;
+    this.firstWeight = firstWeight;
+    this.secondWeight = secondWeight;
+    this.thirdWeight = thirdWeight;
+    this.firstReps = firstReps;
+    this.secondReps = secondReps;
+    this.thirdReps = thirdReps;
+  }
 }
 
 
