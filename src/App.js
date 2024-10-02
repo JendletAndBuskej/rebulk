@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import './App.css';
 
 import firebase from 'firebase/compat/app';
@@ -149,16 +149,31 @@ function ExerciseSelection({ selectedMuscleGroup }) {
 function ExercisePage({ exerciseName, selectedMuscleGroup }) {
   const { uid } = auth.currentUser;
   const loggedSetsRef = firestore.collection('loggedSets');
-  const setQuery = loggedSetsRef.where('exercise', '==', exerciseName).limit(5);
+  // const setQuery = loggedSetsRef.where('exercise', '==', exerciseName).limit(5);
+  const setQuery = loggedSetsRef
+    .where('exercise', '==', exerciseName)
+    .orderBy('timestamp', 'desc')
+    .limit(5); 
   const [loggedSets] = useCollectionData(setQuery, { idField: 'id' });
-  const bestExerciseSets = new ExerciseSets(exerciseName, selectedMuscleGroup)
-  if (loggedSets && loggedSets.length > 0) {
-    bestExerciseSets.importExerciseSets(loggedSets[0].exerciseSets);
-  }
   const [showSets, setShowSets] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+
+  // Initialize ExerciseSets with empty sets
   const [exerciseSets, setExerciseSets] = useState(new ExerciseSets(exerciseName, selectedMuscleGroup));
-  
+
+  // New state for bestExerciseSets
+  const [bestExerciseSets, setBestExerciseSets] = useState(null);
+
+  // Check if bestExerciseSets exists and update exerciseSets when loggedSets is available
+  useEffect(() => {
+    if (loggedSets && loggedSets.length > 0) {
+      const bestSets = new ExerciseSets(exerciseName, selectedMuscleGroup);
+      bestSets.importExerciseSets(loggedSets[0].exerciseSets);
+      setExerciseSets(bestSets); // Update exerciseSets with the bestExerciseSets
+      setBestExerciseSets(bestSets); // Store the best sets in the state
+    }
+  }, [loggedSets, exerciseName, selectedMuscleGroup]);
+
   const handleUpdateSet = (index, newWeight, newReps) => {
     const updatedExerciseSets = new ExerciseSets(exerciseSets.exercise, exerciseSets.muscleGroup);
     updatedExerciseSets.sets = [...exerciseSets.sets];
@@ -170,10 +185,10 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
     e.preventDefault();
     const { uid } = auth.currentUser;
     await loggedSetsRef.add({
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       exercise: exerciseName,
       selectedMuscleGroup,
       user: uid,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       exerciseSets: exerciseSets.sets,
     });
     setExerciseSets(new ExerciseSets(exerciseName, selectedMuscleGroup));
@@ -192,52 +207,57 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
       <div>
         {showSets && <ShowLoggedSet loggedSets={loggedSets} />}
       </div>
-      {showPopup && (
+      {showPopup && exerciseSets && exerciseSets.sets.length > 0 && (
         <div className="popup-overlay">
           <div className="popup-content">
             <h2>Create Log for {exerciseName}</h2>
-            <p>Beat: {bestExerciseSets.sets[0].weight}kg for {bestExerciseSets.sets[0].reps} reps</p>
             <form onSubmit={logExercise}>
-              <div className="flex-container">
-                <div className="flex-item">
-                  <label htmlFor="first-weight-input">Weight (kg):</label>
-                  <input
-                    type="number"
-                    id="first-weight-input"
-                    value={exerciseSets.sets[0].weight}
-                    onChange={(e) => { 
-                      handleUpdateSet(0, Number(e.target.value), exerciseSets.sets[0].reps);
-                    }}
-                  />
-                  <button type="button" className="adjust-button" onClick={() => {
-                    handleUpdateSet(0, exerciseSets.sets[0].weight + 5, exerciseSets.sets[0].reps);
-                  }}>+5kg</button>
-                  <button type="button" className="adjust-button" onClick={() => {
-                    handleUpdateSet(0, exerciseSets.sets[0].weight - 5, exerciseSets.sets[0].reps);
-                  }}>-5kg</button>
-                </div>
-                <div className="flex-item">
-                  <label htmlFor="first-reps-input">Reps:</label>
-                  <input
-                    type="number"
-                    id="first-reps-input"
-                    value={exerciseSets.sets[0].reps}
-                    onChange={(e) => {
-                      handleUpdateSet(0, exerciseSets.sets[0].weight, Number(e.target.value));
-                    }}
-                  />
-                  <button type="button" className="adjust-button" onClick={() => {
-                    handleUpdateSet(0, exerciseSets.sets[0].weight, exerciseSets.sets[0].reps + 1);
-                  }}>+1 rep</button>
-                  <button type="button" className="adjust-button" onClick={() => {
-                    handleUpdateSet(0, exerciseSets.sets[0].weight, exerciseSets.sets[0].reps - 1);
-                  }}>-1 rep</button>
+            {bestExerciseSets && bestExerciseSets.sets.map((set, index) => (
+              <div key={index}>
+                <p>Beat: {set.weight}kg for {set.reps} reps</p>
+                <div className="flex-container">
+                  <div className="flex-item">
+                    <label htmlFor={`weight-input-${index}`}>Weight (kg):</label>
+                    <input
+                      type="number"
+                      id={`weight-input-${index}`}
+                      value={exerciseSets.sets[index].weight}
+                      onChange={(e) => { 
+                        handleUpdateSet(index, Number(e.target.value), exerciseSets.sets[index].reps);
+                      }}
+                    />
+                    <button type="button" className="adjust-button" onClick={() => {
+                      handleUpdateSet(index, exerciseSets.sets[index].weight + 5, exerciseSets.sets[index].reps);
+                    }}>+5kg</button>
+                    <button type="button" className="adjust-button" onClick={() => {
+                      handleUpdateSet(index, exerciseSets.sets[index].weight - 5, exerciseSets.sets[index].reps);
+                    }}>-5kg</button>
+                  </div>
+                  <div className="flex-item">
+                    <label htmlFor={`reps-input-${index}`}>Reps:</label>
+                    <input
+                      type="number"
+                      id={`reps-input-${index}`}
+                      value={exerciseSets.sets[index].reps}
+                      onChange={(e) => {
+                        handleUpdateSet(index, exerciseSets.sets[index].weight, Number(e.target.value));
+                      }}
+                    />
+                    <button type="button" className="adjust-button" onClick={() => {
+                      handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps + 1);
+                    }}>+1 rep</button>
+                    <button type="button" className="adjust-button" onClick={() => {
+                      handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps - 1);
+                    }}>-1 rep</button>
+                  </div>
                 </div>
               </div>
-              <div className="popup-buttons">
-                <button type="submit">Add Log</button>
-                <button type="button" onClick={() => setShowPopup(false)}>Cancel</button>
-              </div>
+            ))}
+
+            <div className="popup-buttons">
+              <button type="submit">Add Log</button>
+              <button type="button" onClick={() => setShowPopup(false)}>Cancel</button>
+            </div>
             </form>
           </div>
         </div>
@@ -245,113 +265,6 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
     </div>
   );
 }
-
-// function ExercisePage({ exerciseName, selectedMuscleGroup }) {
-//   const { uid } = auth.currentUser;
-//   const loggedSetsRef = firestore.collection('loggedSets');
-//   const setQuery = loggedSetsRef
-//   .where('exercise', '==', exerciseName)
-//   .limit(5);
-//   const [loggedSets] = useCollectionData(setQuery, { idField: 'id' });
-//   const [showSets, setShowSets] = useState(false);
-//   const [showPopup, setShowPopup] = useState(false);
-//   const [exerciseSets, setExerciseSets] = useState(new ExerciseSets(exerciseName, selectedMuscleGroup));
-//   const [updateTrigger, setUpdateTrigger] = useState(false);
-//   const triggerUpdate = () => setUpdateTrigger(!updateTrigger);
-  
-//   console.log("at init: ")
-//   console.log(exerciseSets)
-  
-//   exerciseSets.setInitForTesting()
-//   console.log("after addsets: ")
-//   console.log(exerciseSets)
-
-//   const logExercise = async (e) => {
-//     e.preventDefault();
-//     const { uid } = auth.currentUser;
-//     await loggedSetsRef.add({
-//       exercise: exerciseName,
-//       selectedMuscleGroup,
-//       user: uid,
-//       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-//       exerciseSets: exerciseSets.sets,
-//     });
-//     setExerciseSets(new ExerciseSets(exerciseName, selectedMuscleGroup))
-//     setShowPopup(false);
-//   };  
-//   return (
-//     <div>
-//       <div>
-//         <h2>{exerciseName}</h2>
-//       </div>
-//       <div>
-//         {loggedSets && loggedSets.length > 0 && (<p>Beat {loggedSets[0].weight}kg - {loggedSets[0].reps} reps</p>)}
-//       </div>
-//       <div>
-//         <button onClick={() => setShowPopup(true)}>Create Log</button>
-//         <button onClick={() => setShowSets(!showSets)}>{showSets ? 'Hide Logged Sets' : 'Show Logged Sets'}</button>
-//       </div>
-//       <div>
-//         {showSets && <ShowLoggedSet loggedSets={loggedSets} />}
-//       </div>
-//       {showPopup && (
-//         <div className="popup-overlay">
-//           <div className="popup-content">
-//             <h2>Create Log for {exerciseName}</h2>
-//             <form onSubmit={logExercise}>
-//               <div className="flex-container">
-//                 <div className="flex-item">
-//                   <label htmlFor="first-weight-input">Weight (kg):</label>
-//                   <input
-//                     type="number"
-//                     id="first-weight-input"
-//                     value={exerciseSets.sets[0].weight}
-//                     onChange={(e) => { 
-//                       exerciseSets.updateSet(0,Number(e.target.value),exerciseSets.sets[0].reps);
-//                       triggerUpdate();
-//                     }}
-//                   />
-//                   <button type="button" className="adjust-button" onClick={() => {
-//                     exerciseSets.updateSet(0,exerciseSets.sets[0].weight+5,exerciseSets.sets[0].reps);
-//                     triggerUpdate();
-//                   }}>+5kg</button>
-//                   <button type="button" className="adjust-button" onClick={() => {
-//                     exerciseSets.updateSet(0,exerciseSets.sets[0].weight-5,exerciseSets.sets[0].reps);
-//                     triggerUpdate();
-//                   }}>-5kg</button>
-//                 </div>
-//                 <div className="flex-item">
-//                   <label htmlFor="first-reps-input">Reps:</label>
-//                   <input
-//                     type="number"
-//                     id="first-reps-input"
-//                     value={exerciseSets.sets[0].reps}
-//                     onChange={(e) => {
-//                       exerciseSets.updateSet(0,exerciseSets.sets[0].weight,Number(e.target.value));
-//                       triggerUpdate();
-//                     }}
-//                   />
-//                   <button type="button" className="adjust-button" onClick={() => {
-//                     exerciseSets.updateSet(0,exerciseSets.sets[0].weight,exerciseSets.sets[0].reps+1);
-//                     triggerUpdate();
-//                   }}>+1 rep</button>
-//                   <button type="button" className="adjust-button" onClick={() => {
-//                     exerciseSets.updateSet(0,exerciseSets.sets[0].weight,exerciseSets.sets[0].reps-1);
-//                     triggerUpdate();
-//                   }}>-1 rep</button>
-//                 </div>
-//               </div>
-//               <div className="popup-buttons">
-//                 <button type="submit">Add Log</button>
-//                 <button type="button" onClick={() => setShowPopup(false)}>Cancel</button>
-//               </div>
-//             </form>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
 
 function ShowLoggedSet({ loggedSets }) {
   return (
@@ -376,11 +289,7 @@ class ExerciseSets {
   constructor(exercise, selectedMuscleGroup) {
     this.exercise = exercise;
     this.selectedMuscleGroup = selectedMuscleGroup;
-    this.sets = [
-      { weight: 30, reps: 10 },
-      { weight: 40, reps: 10 },
-      { weight: 50, reps: 10 }
-    ];
+    this.sets = [];
   }
 
   addSet(weight, reps) {
