@@ -9,19 +9,14 @@ import 'firebase/compat/analytics';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
-firebase.initializeApp({
-  apiKey: "AIzaSyBhVYLGMXcO4odTzSEYayQX2NsrK-JThtg",
-  authDomain: "rebulk-e126f.firebaseapp.com",
-  projectId: "rebulk-e126f",
-  storageBucket: "rebulk-e126f.appspot.com",
-  messagingSenderId: "491091502029",
-  appId: "1:491091502029:web:4b2fad7ae760506e325a84",
-  measurementId: "G-1VF0NK2BF2"
-})
+import getAppConfig from './firebaseConfig'; 
+
+const appConfig = getAppConfig();
+firebase.initializeApp(appConfig);
 
 const auth = firebase.auth();
 const firestore = firebase.firestore();
-// const analytics = firebase.analytics();
+
 
 function App() {
   const [user] = useAuthState(auth);
@@ -57,12 +52,22 @@ function WorkoutSelection() {
   // Handle for buttonclicks
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [showBtnPrevPage, setShowBtnPrevPage] = useState(null);
-  const btnWorkoutSelection = (button) => { setSelectedWorkout(button); };
-  const btnPrevPage = (button) => { setSelectedWorkout(null); };
+  const [history, setHistory] = useState([]);
+  const btnWorkoutSelection = (button) => { 
+    setHistory([...history, selectedWorkout]);
+    setSelectedWorkout(button); 
+  };
+  const btnPrevPage = () => { 
+    if (history.length > 0) {
+      const lastSelection = history.pop();
+      setSelectedWorkout(lastSelection);
+      setHistory(history); 
+    } else {
+      setSelectedWorkout(null);
+  }};
   
   return (
     <div>
-      {/* Conditional rendering for main buttons */}
       {!selectedWorkout && (
         <div>
           <h1>Select Workout Form</h1>
@@ -71,18 +76,32 @@ function WorkoutSelection() {
           </div>
         </div>
       )}
-      {/* Display Muscle group selection if gym selected*/}
-      {selectedWorkout === "gym" && < MuscleGroupSelection />}
-      {/* Back Button to return to the original state */}
+      {selectedWorkout === "gym" && < MuscleGroupSelection onBack={btnPrevPage}/>}
       <button onClick={btnPrevPage} className="back-button">←</button>
     </div>
   );
 }
 
-function MuscleGroupSelection() {
+function MuscleGroupSelection({ onBack }) {
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState(null);
-  const btnMuscleGroupSelection = (button) => { setSelectedMuscleGroup(button); };
-  const btnPrevPage = (button) => { setSelectedMuscleGroup(null); };
+  const [history, setHistory] = useState([]);
+  // const btnMuscleGroupSelection = (button) => { setSelectedMuscleGroup(button); };
+  const btnMuscleGroupSelection = (button) => {
+    setHistory([...history, selectedMuscleGroup]); 
+    setSelectedMuscleGroup(button); 
+  };
+  // const btnPrevPage = (button) => { setSelectedMuscleGroup(null); };
+  const btnPrevPage = () => {
+    if (history.length > 0) {
+      const lastSelection = history.pop();
+      setSelectedMuscleGroup(lastSelection);
+      setHistory(history);
+    } else {
+      setSelectedMuscleGroup(null);
+      onBack();
+    }
+  };
+
   return (
     <div>
       {!selectedMuscleGroup && ( 
@@ -100,6 +119,9 @@ function MuscleGroupSelection() {
         <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("triceps")}>Triceps</button>
         <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("biceps")}>Biceps</button>
         </div>
+        <div>
+        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("abs")}>Le Pinguini</button>
+        </div>
       </div>
       )}
       {selectedMuscleGroup && < ExerciseSelection selectedMuscleGroup={selectedMuscleGroup}/>}
@@ -114,34 +136,68 @@ function ExerciseSelection({ selectedMuscleGroup }) {
   const exerciseQuery = exercisesRef.where('musclegroup', '==', selectedMuscleGroup)
   const [exercises] = useCollectionData(exerciseQuery, { idField: 'id' });
   const [exercise, setExerciseName] = useState('');
-  const [musclegroup, setMuscleGroup] = useState('');
   const [selectedExercise, setSelectedExercise] = useState(false);
+  const [showPopup, setShowPopup] = useState(false); 
+  
   const btnExerciseSelection = (execise) => { setSelectedExercise(execise); };
   
+  const capitalizeWords = (str) => {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
   const addExercise = async (e) => {
     e.preventDefault();
     const { uid } = auth.currentUser;
+    const formattedExerciseName = capitalizeWords(exercise);
     await exercisesRef.add({
-      exercise,
-      musclegroup,
       user: uid,
+      musclegroup: selectedMuscleGroup,
+      exercise: formattedExerciseName
     });
     setExerciseName('');
-    setMuscleGroup('');
+    setShowPopup(false);
   };
-  
+
   return (
     <div>
       {!selectedExercise && (
-        <div>
+      <div>
         <h2>Select an Exercise</h2>
         {/* Map over the exercises data and create a button for each */}
         {exercises && exercises.map((exerciseEntry, index) => (
-          <div><button key={index} onClick={() => btnExerciseSelection(exerciseEntry.exercise)}>{exerciseEntry.exercise}</button></div>)
-        )}
+          <div key={index}>
+          <button onClick={() => btnExerciseSelection(exerciseEntry.exercise)}>
+            {exerciseEntry.exercise}
+          </button>
+        </div>
+        ))}
+        <div>
+          <button className="subtile-button" onClick={() => setShowPopup(true)}>Add Exercise</button>
+        </div>
       </div>
       )}
       {selectedExercise && < ExercisePage exerciseName={selectedExercise} selectedMuscleGroup={selectedMuscleGroup}/>}
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h2>Add New Exercise</h2>
+            <form onSubmit={addExercise}>
+              <label htmlFor="exerciseName">Exercise Name:</label>
+              <input
+                type="text"
+                id="exerciseName"
+                value={exercise}
+                onChange={(e) => setExerciseName(e.target.value)}
+                required
+              />
+              <div className="popup-buttons">
+                <button type="submit">Add Exercise</button>
+                <button type="button" onClick={() => setShowPopup(false)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -149,7 +205,6 @@ function ExerciseSelection({ selectedMuscleGroup }) {
 function ExercisePage({ exerciseName, selectedMuscleGroup }) {
   const { uid } = auth.currentUser;
   const loggedSetsRef = firestore.collection('loggedSets');
-  // const setQuery = loggedSetsRef.where('exercise', '==', exerciseName).limit(5);
   const setQuery = loggedSetsRef
     .where('exercise', '==', exerciseName)
     .orderBy('timestamp', 'desc')
