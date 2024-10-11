@@ -10,7 +10,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 import getAppConfig from './firebaseConfig'; 
-
+import getDefaultExercises from './defaultExercises';
 const appConfig = getAppConfig();
 firebase.initializeApp(appConfig);
 
@@ -51,7 +51,6 @@ function SignOut() {
 function WorkoutSelection() {
   // Handle for buttonclicks
   const [selectedWorkout, setSelectedWorkout] = useState(null);
-  const [showBtnPrevPage, setShowBtnPrevPage] = useState(null);
   const [history, setHistory] = useState([]);
   const btnWorkoutSelection = (button) => { 
     setHistory([...history, selectedWorkout]);
@@ -133,6 +132,8 @@ function MuscleGroupSelection({ onBack }) {
 function ExerciseSelection({ selectedMuscleGroup }) {
   const exercisesRef = firestore.collection('exercises');
   const { uid } = auth.currentUser;
+  const defaultExercises = getDefaultExercises(selectedMuscleGroup)
+  console.log(defaultExercises)
   const exerciseQuery = exercisesRef.where('musclegroup', '==', selectedMuscleGroup)
   const [exercises] = useCollectionData(exerciseQuery, { idField: 'id' });
   const [exercise, setExerciseName] = useState('');
@@ -164,9 +165,16 @@ function ExerciseSelection({ selectedMuscleGroup }) {
       <div>
         <h2>Select an Exercise</h2>
         {/* Map over the exercises data and create a button for each */}
-        {exercises && exercises.map((exerciseEntry, index) => (
+        {defaultExercises && defaultExercises.map((defaultExerciseEntry, index) => (
           <div key={index}>
-          <button onClick={() => btnExerciseSelection(exerciseEntry.exercise)}>
+          <button className='eSel' onClick={() => btnExerciseSelection(defaultExerciseEntry)}>
+            {defaultExerciseEntry}
+          </button>
+        </div>
+        ))}
+        {exercises && exercises.filter(eEntry => eEntry.user === uid).map((exerciseEntry, index) => (
+          <div key={index}>
+          <button className='eSel' onClick={() => btnExerciseSelection(exerciseEntry.exercise)}>
             {exerciseEntry.exercise}
           </button>
         </div>

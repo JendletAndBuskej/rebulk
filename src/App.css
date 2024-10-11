@@ -241,6 +241,42 @@ button.sub-option:hover {
     width: 100%;  /* Full-width on small screens */
   }
 }
+/* Button styles with consistent width */
+.eSel {
+  background-color: #1e88e5;  /* Blue background */
+  color: #e0e0e0;             /* Light text */
+  border: none;
+  padding: 1rem 2rem;
+  margin: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  width: 400px;                /* Fixed width for all buttons */
+  text-align: center;          /* Ensure text is centered */
+}
+
+/* Hover and focus effects for buttons */
+.eSel:hover {
+  background-color: #1565c0;  /* Darker blue on hover */
+}
+
+.eSel:focus {
+  outline: none;
+  background-color: #42a5f5;  /* Lighter blue when focused */
+}
+
+/* Button click active effect */
+.eSel:active {
+  background-color: #0d47a1;  /* Darker shade on click */
+}
+
+/* Responsive width: Optional if you want smaller buttons on mobile */
+@media (max-width: 600px) {
+  .eSel {
+    width: 100%;  /* Full-width on small screens */
+  }
+}
 
 /* Popup overlay to cover the screen */
 .popup-overlay {
