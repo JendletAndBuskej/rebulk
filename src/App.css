@@ -20,6 +20,9 @@ body {
 div {
   text-align: center;
 }
+div.wVertPad {
+  padding-bottom: 2em;
+}
 
 /* Main content styling */
 main {

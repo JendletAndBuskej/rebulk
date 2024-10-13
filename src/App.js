@@ -9,7 +9,7 @@ import 'firebase/compat/analytics';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
-import getAppConfig from './firebaseConfig'; 
+import getAppConfig from './firebaseConfig';
 import getDefaultExercises from './defaultExercises';
 const appConfig = getAppConfig();
 firebase.initializeApp(appConfig);
@@ -52,31 +52,32 @@ function WorkoutSelection() {
   // Handle for buttonclicks
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [history, setHistory] = useState([]);
-  const btnWorkoutSelection = (button) => { 
+  const btnWorkoutSelection = (button) => {
     setHistory([...history, selectedWorkout]);
-    setSelectedWorkout(button); 
+    setSelectedWorkout(button);
   };
-  const btnPrevPage = () => { 
+  const btnPrevPage = () => {
     if (history.length > 0) {
       const lastSelection = history.pop();
       setSelectedWorkout(lastSelection);
-      setHistory(history); 
+      setHistory(history);
     } else {
       setSelectedWorkout(null);
-  }};
-  
+    }
+  };
+
   return (
     <div>
       {!selectedWorkout && (
         <div>
           <h1>Select Workout Form</h1>
           <div>
-            <button onClick={() => btnWorkoutSelection("gym")}>Gym BRO</button>
+            <button onClick={() => btnWorkoutSelection('gym')}>Gym BRO</button>
           </div>
         </div>
       )}
-      {selectedWorkout === "gym" && < MuscleGroupSelection onBack={btnPrevPage}/>}
-      <button onClick={btnPrevPage} className="back-button">←</button>
+      {selectedWorkout === 'gym' && < MuscleGroupSelection onBack={btnPrevPage} />}
+      <button onClick={btnPrevPage} className='back-button'>←</button>
     </div>
   );
 }
@@ -86,8 +87,8 @@ function MuscleGroupSelection({ onBack }) {
   const [history, setHistory] = useState([]);
   // const btnMuscleGroupSelection = (button) => { setSelectedMuscleGroup(button); };
   const btnMuscleGroupSelection = (button) => {
-    setHistory([...history, selectedMuscleGroup]); 
-    setSelectedMuscleGroup(button); 
+    setHistory([...history, selectedMuscleGroup]);
+    setSelectedMuscleGroup(button);
   };
   // const btnPrevPage = (button) => { setSelectedMuscleGroup(null); };
   const btnPrevPage = () => {
@@ -103,28 +104,28 @@ function MuscleGroupSelection({ onBack }) {
 
   return (
     <div>
-      {!selectedMuscleGroup && ( 
-      <div>
-        <h2>Select Muscle Group</h2>
+      {!selectedMuscleGroup && (
         <div>
-        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("chest")}>Chest</button>
-        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("back")}>Back</button>
+          <h2>Select Muscle Group</h2>
+          <div>
+            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('chest')}>Chest</button>
+            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('back')}>Back</button>
+          </div>
+          <div>
+            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('shoulders')}>Shoulders</button>
+            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('legs')}>Legs</button>
+          </div>
+          <div>
+            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('triceps')}>Triceps</button>
+            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('biceps')}>Biceps</button>
+          </div>
+          <div>
+            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('abs')}>Le Pinguini</button>
+          </div>
         </div>
-        <div>
-        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("shoulders")}>Shoulders</button>
-        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("legs")}>Legs</button>
-        </div>
-        <div>
-        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("triceps")}>Triceps</button>
-        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("biceps")}>Biceps</button>
-        </div>
-        <div>
-        <button className="mGrpSel" onClick={() => btnMuscleGroupSelection("abs")}>Le Pinguini</button>
-        </div>
-      </div>
       )}
-      {selectedMuscleGroup && < ExerciseSelection selectedMuscleGroup={selectedMuscleGroup}/>}
-      <button onClick={btnPrevPage} className="back-button">←</button>
+      {selectedMuscleGroup && < ExerciseSelection selectedMuscleGroup={selectedMuscleGroup} />}
+      <button onClick={btnPrevPage} className='back-button'>←</button>
     </div>
   );
 }
@@ -138,10 +139,10 @@ function ExerciseSelection({ selectedMuscleGroup }) {
   const [exercises] = useCollectionData(exerciseQuery, { idField: 'id' });
   const [exercise, setExerciseName] = useState('');
   const [selectedExercise, setSelectedExercise] = useState(false);
-  const [showPopup, setShowPopup] = useState(false); 
-  
+  const [showPopup, setShowPopup] = useState(false);
+
   const btnExerciseSelection = (execise) => { setSelectedExercise(execise); };
-  
+
   const capitalizeWords = (str) => {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
   };
@@ -162,45 +163,45 @@ function ExerciseSelection({ selectedMuscleGroup }) {
   return (
     <div>
       {!selectedExercise && (
-      <div>
-        <h2>Select an Exercise</h2>
-        {/* Map over the exercises data and create a button for each */}
-        {defaultExercises && defaultExercises.map((defaultExerciseEntry, index) => (
-          <div key={index}>
-          <button className='eSel' onClick={() => btnExerciseSelection(defaultExerciseEntry)}>
-            {defaultExerciseEntry}
-          </button>
-        </div>
-        ))}
-        {exercises && exercises.filter(eEntry => eEntry.user === uid).map((exerciseEntry, index) => (
-          <div key={index}>
-          <button className='eSel' onClick={() => btnExerciseSelection(exerciseEntry.exercise)}>
-            {exerciseEntry.exercise}
-          </button>
-        </div>
-        ))}
         <div>
-          <button className="subtile-button" onClick={() => setShowPopup(true)}>Add Exercise</button>
+          <h2>Select an Exercise</h2>
+          {/* Map over the exercises data and create a button for each */}
+          {defaultExercises && defaultExercises.map((defaultExerciseEntry, index) => (
+            <div key={index}>
+              <button className='eSel' onClick={() => btnExerciseSelection(defaultExerciseEntry)}>
+                {defaultExerciseEntry}
+              </button>
+            </div>
+          ))}
+          {exercises && exercises.filter(eEntry => eEntry.user === uid).map((exerciseEntry, index) => (
+            <div key={index}>
+              <button className='eSel' onClick={() => btnExerciseSelection(exerciseEntry.exercise)}>
+                {exerciseEntry.exercise}
+              </button>
+            </div>
+          ))}
+          <div>
+            <button className='subtile-button' onClick={() => setShowPopup(true)}>Add Exercise</button>
+          </div>
         </div>
-      </div>
       )}
-      {selectedExercise && < ExercisePage exerciseName={selectedExercise} selectedMuscleGroup={selectedMuscleGroup}/>}
+      {selectedExercise && < ExercisePage exerciseName={selectedExercise} selectedMuscleGroup={selectedMuscleGroup} />}
       {showPopup && (
-        <div className="popup-overlay">
-          <div className="popup-content">
+        <div className='popup-overlay'>
+          <div className='popup-content'>
             <h2>Add New Exercise</h2>
             <form onSubmit={addExercise}>
-              <label htmlFor="exerciseName">Exercise Name:</label>
+              <label htmlFor='exerciseName'>Exercise Name:</label>
               <input
-                type="text"
-                id="exerciseName"
+                type='text'
+                id='exerciseName'
                 value={exercise}
                 onChange={(e) => setExerciseName(e.target.value)}
                 required
               />
-              <div className="popup-buttons">
-                <button type="submit">Add Exercise</button>
-                <button type="button" onClick={() => setShowPopup(false)}>Cancel</button>
+              <div className='popup-buttons'>
+                <button type='submit'>Add Exercise</button>
+                <button type='button' onClick={() => setShowPopup(false)}>Cancel</button>
               </div>
             </form>
           </div>
@@ -216,25 +217,22 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
   const setQuery = loggedSetsRef
     .where('exercise', '==', exerciseName)
     .orderBy('timestamp', 'desc')
-    .limit(5); 
+    .limit(5);
   const [loggedSets] = useCollectionData(setQuery, { idField: 'id' });
   const [showSets, setShowSets] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
-  // Initialize ExerciseSets with empty sets
   const [exerciseSets, setExerciseSets] = useState(new ExerciseSets(exerciseName, selectedMuscleGroup));
-
-  // New state for bestExerciseSets
   const [bestExerciseSets, setBestExerciseSets] = useState(null);
 
   // Check if bestExerciseSets exists and update exerciseSets when loggedSets is available
   useEffect(() => {
-    if (loggedSets && loggedSets.length > 0) {
+    // if (loggedSets && loggedSets.length > 0) {
       const bestSets = new ExerciseSets(exerciseName, selectedMuscleGroup);
-      bestSets.importExerciseSets(loggedSets[0].exerciseSets);
-      setExerciseSets(bestSets); // Update exerciseSets with the bestExerciseSets
-      setBestExerciseSets(bestSets); // Store the best sets in the state
-    }
+      if (loggedSets && loggedSets.length > 0) { bestSets.importExerciseSets(loggedSets[0].exerciseSets); }
+      setExerciseSets(bestSets);
+      setBestExerciseSets(bestSets);
+    // }
   }, [loggedSets, exerciseName, selectedMuscleGroup]);
 
   const handleUpdateSet = (index, newWeight, newReps) => {
@@ -258,6 +256,7 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
     setShowPopup(false);
   };
 
+  console.log(exerciseSets)
   return (
     <div>
       <div>
@@ -271,56 +270,63 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
         {showSets && <ShowLoggedSet loggedSets={loggedSets} />}
       </div>
       {showPopup && exerciseSets && exerciseSets.sets.length > 0 && (
-        <div className="popup-overlay">
-          <div className="popup-content">
+        <div className='popup-overlay'>
+          <div className='popup-content'>
             <h2>Create Log for {exerciseName}</h2>
             <form onSubmit={logExercise}>
-            {bestExerciseSets && bestExerciseSets.sets.map((set, index) => (
-              <div key={index}>
-                <p>Beat: {set.weight}kg for {set.reps} reps</p>
-                <div className="flex-container">
-                  <div className="flex-item">
-                    <label htmlFor={`weight-input-${index}`}>Weight (kg):</label>
-                    <input
-                      type="number"
-                      id={`weight-input-${index}`}
-                      value={exerciseSets.sets[index].weight}
-                      onChange={(e) => { 
-                        handleUpdateSet(index, Number(e.target.value), exerciseSets.sets[index].reps);
-                      }}
-                    />
-                    <button type="button" className="adjust-button" onClick={() => {
-                      handleUpdateSet(index, exerciseSets.sets[index].weight + 5, exerciseSets.sets[index].reps);
-                    }}>+5kg</button>
-                    <button type="button" className="adjust-button" onClick={() => {
-                      handleUpdateSet(index, exerciseSets.sets[index].weight - 5, exerciseSets.sets[index].reps);
-                    }}>-5kg</button>
+              {bestExerciseSets && bestExerciseSets.sets.map((set, index) => (
+                <div className='wVertPad' key={index}>
+                  {set.weight == 0 ? <p>No Previous Logs</p> : <p>Beat: {set.weight}kg for {set.reps} reps</p>}
+                  <div className='flex-container'>
+                    <div className='flex-item'>
+                      <label htmlFor={`weight-input-${index}`}>Weight (kg):</label>
+                      <input
+                        type='number'
+                        id={`weight-input-${index}`}
+                        value={exerciseSets.sets[index].weight}
+                        onChange={(e) => {
+                          handleUpdateSet(index, Number(e.target.value), exerciseSets.sets[index].reps);
+                        }}
+                      />
+                      <button type='button' className='adjust-button' onClick={() => {
+                        handleUpdateSet(index, exerciseSets.sets[index].weight + 5, exerciseSets.sets[index].reps);
+                      }}>+5kg</button>
+                      <button type='button' className='adjust-button' onClick={() => {
+                        handleUpdateSet(index, exerciseSets.sets[index].weight - 5, exerciseSets.sets[index].reps);
+                      }}>-5kg</button>
+                    </div>
+                    <div className='flex-item'>
+                      <label htmlFor={`reps-input-${index}`}>Reps:</label>
+                      <input
+                        type='number'
+                        id={`reps-input-${index}`}
+                        value={exerciseSets.sets[index].reps}
+                        onChange={(e) => {
+                          handleUpdateSet(index, exerciseSets.sets[index].weight, Number(e.target.value));
+                        }}
+                      />
+                      <button type='button' className='adjust-button' onClick={() => {
+                        handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps + 1);
+                      }}>+1 rep</button>
+                      <button type='button' className='adjust-button' onClick={() => {
+                        handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps - 1);
+                      }}>-1 rep</button>
+                    </div>
                   </div>
-                  <div className="flex-item">
-                    <label htmlFor={`reps-input-${index}`}>Reps:</label>
-                    <input
-                      type="number"
-                      id={`reps-input-${index}`}
-                      value={exerciseSets.sets[index].reps}
-                      onChange={(e) => {
-                        handleUpdateSet(index, exerciseSets.sets[index].weight, Number(e.target.value));
-                      }}
-                    />
-                    <button type="button" className="adjust-button" onClick={() => {
-                      handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps + 1);
-                    }}>+1 rep</button>
-                    <button type="button" className="adjust-button" onClick={() => {
-                      handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps - 1);
-                    }}>-1 rep</button>
-                  </div>
+                  {/* <div className='flex-container'>
+                      <div>
+                        <div className='flex-item'>
+                          <label></label>
+                        </div>
+                      </div>
+                  </div> */}
                 </div>
-              </div>
-            ))}
+              ))}
 
-            <div className="popup-buttons">
-              <button type="submit">Add Log</button>
-              <button type="button" onClick={() => setShowPopup(false)}>Cancel</button>
-            </div>
+              <div className='popup-buttons'>
+                <button type='submit'>Add Log</button>
+                <button type='button' onClick={() => setShowPopup(false)}>Cancel</button>
+              </div>
             </form>
           </div>
         </div>
@@ -333,17 +339,20 @@ function ShowLoggedSet({ loggedSets }) {
   return (
     <>
       <main>
-        {loggedSets && loggedSets.map(set => <LoggedSet key={set.id} set={set} />)}
+        {loggedSets && loggedSets.map(set => <LoggedSet key={set.id} set={set.exerciseSets} />)}
       </main>
     </>
   );
 }
 
 function LoggedSet({ set }) {
-  const { exercise, reps, weight } = set;
   return (
-    <div className="set-log">
-      <p>{exercise} - {reps} reps - {weight} kg</p>
+    <div className='set-log'>
+      {set.forEach(setEntry => {
+        <div>
+          <p>{setEntry.weight}kg - {setEntry.reps} reps</p>
+        </div>
+      })};
     </div>
   );
 }
@@ -352,7 +361,11 @@ class ExerciseSets {
   constructor(exercise, selectedMuscleGroup) {
     this.exercise = exercise;
     this.selectedMuscleGroup = selectedMuscleGroup;
-    this.sets = [];
+    this.sets = [
+      { weight: 0, reps: 0 },
+      { weight: 0, reps: 0 },
+      { weight: 0, reps: 0 }
+    ];
   }
 
   addSet(weight, reps) {
@@ -363,11 +376,11 @@ class ExerciseSets {
       this.sets.splice(index, 1);
     }
   }
-  updateSet(index, newWeight=this.sets[index].weight, newReps=this.sets[index].reps) {
+  updateSet(index, newWeight = this.sets[index].weight, newReps = this.sets[index].reps) {
     if (index >= 0 && index < this.sets.length) {
       this.sets[index] = { weight: newWeight, reps: newReps };
     }
-    console.log("at update: ")
+    console.log('at update: ')
     console.log(this.sets)
   }
   importExerciseSets(sets) {
