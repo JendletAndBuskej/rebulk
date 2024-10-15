@@ -1,3 +1,20 @@
+/* General Reset
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Body styling */
+/* body {
+  background-color: #121212;
+  color: #e0e0e0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+} */
 /* General Reset */
 * {
   margin: 0;
@@ -10,10 +27,19 @@
 body {
   background-color: #121212;
   color: #e0e0e0;
-  min-height: 100vh;
+  min-height: 100vh; /* Keep this */
+  overflow-y: auto; /* Enable scrolling on the body */
+}
+
+/* Container styling */
+.container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center; /* Center content vertically within the container */
+  align-items: center; /* Center content horizontally */
+  min-height: 100vh; /* Fill viewport height */
+  padding: 20px; /* Optional padding */
+  margin-top: 20px; /* Add margin to the top */
 }
 
 /* Container for main content */
@@ -120,7 +146,6 @@ button.sub-option:hover {
   outline: none;
 }
 
-/* Popup overlay to cover the entire screen with a transparent dark background */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -140,6 +165,8 @@ button.sub-option:hover {
   padding: 20px;
   border-radius: 8px;
   width: 300px;
+  max-height: 80vh; /* Set a max height */
+  overflow-y: auto; /* Enable vertical scrolling */
   text-align: center;
   color: #e0e0e0; /* Light text for readability */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
@@ -203,10 +230,11 @@ button.sub-option:hover {
 
 /* Input focus effect inside the popup */
 .popup-content input:focus {
-  border-color: #64b5f6;  /* Blue border on focus */
+  border-color: #64b5f6; /* Blue border on focus */
   outline: none;
   box-shadow: 0 0 8px rgba(100, 181, 246, 0.8); /* Light blue shadow */
 }
+
 
 /* Button styles with consistent width */
 .mGrpSel {
@@ -292,16 +320,6 @@ button.sub-option:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-/* Popup content */
-.popup-content {
-  background-color: #1e1e1e;
-  color: #e0e0e0;
-  padding: 20px;
-  border-radius: 8px;
-  width: 300px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* Rows */

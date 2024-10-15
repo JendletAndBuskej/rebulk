@@ -22,7 +22,7 @@ function App() {
   const [user] = useAuthState(auth);
 
   return (
-    <div className='App'>
+    <div className='container'>
       <section>
         {user ? <WorkoutSelection /> : <SignIn />}
       </section>
@@ -287,7 +287,7 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                         onChange={(e) => {
                           handleUpdateSet(index, Number(e.target.value), exerciseSets.sets[index].reps);
                         }}
-                      />
+                        />
                       <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight + 5, exerciseSets.sets[index].reps);
                       }}>+5kg</button>
@@ -304,7 +304,7 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                         onChange={(e) => {
                           handleUpdateSet(index, exerciseSets.sets[index].weight, Number(e.target.value));
                         }}
-                      />
+                        />
                       <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps + 1);
                       }}>+1 rep</button>
@@ -313,16 +313,12 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                       }}>-1 rep</button>
                     </div>
                   </div>
-                  {/* <div className='flex-container'>
-                      <div>
-                        <div className='flex-item'>
-                          <label></label>
-                        </div>
-                      </div>
-                  </div> */}
                 </div>
               ))}
 
+              <div>
+                <button className='subtile-button' onClick={() => exerciseSets.addSet(exerciseSets.sets[0].weight,exerciseSets.sets[0].reps)}>Add Set</button>
+              </div>
               <div className='popup-buttons'>
                 <button type='submit'>Add Log</button>
                 <button type='button' onClick={() => setShowPopup(false)}>Cancel</button>
