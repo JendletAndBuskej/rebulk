@@ -24,7 +24,8 @@ function App() {
   return (
     <div className='container'>
       <section>
-        {user ? <WorkoutSelection /> : <SignIn />}
+        {/* {user ? <WorkoutSelection /> : <SignIn />} */}
+        {user ? <MuscleGroupSelection /> : <SignIn />}
       </section>
     </div>
   );
@@ -82,7 +83,7 @@ function WorkoutSelection() {
   );
 }
 
-function MuscleGroupSelection({ onBack }) {
+function MuscleGroupSelection() {
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState(null);
   const [history, setHistory] = useState([]);
   // const btnMuscleGroupSelection = (button) => { setSelectedMuscleGroup(button); };
@@ -90,17 +91,17 @@ function MuscleGroupSelection({ onBack }) {
     setHistory([...history, selectedMuscleGroup]);
     setSelectedMuscleGroup(button);
   };
-  // const btnPrevPage = (button) => { setSelectedMuscleGroup(null); };
-  const btnPrevPage = () => {
-    if (history.length > 0) {
-      const lastSelection = history.pop();
-      setSelectedMuscleGroup(lastSelection);
-      setHistory(history);
-    } else {
-      setSelectedMuscleGroup(null);
-      onBack();
-    }
-  };
+  const btnPrevPage = (button) => { setSelectedMuscleGroup(null); };
+  // const btnPrevPage = () => {
+  //   if (history.length > 0) {
+  //     const lastSelection = history.pop();
+  //     setSelectedMuscleGroup(lastSelection);
+  //     setHistory(history);
+  //   } else {
+  //     setSelectedMuscleGroup(null);
+  //     onBack();
+  //   }
+  // };
 
   return (
     <div>
@@ -125,7 +126,7 @@ function MuscleGroupSelection({ onBack }) {
         </div>
       )}
       {selectedMuscleGroup && < ExerciseSelection selectedMuscleGroup={selectedMuscleGroup} />}
-      <button onClick={btnPrevPage} className='back-button'>←</button>
+      {selectedMuscleGroup && <button onClick={btnPrevPage} className='back-button'>←</button>}
     </div>
   );
 }
@@ -236,10 +237,32 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
   }, [loggedSets, exerciseName, selectedMuscleGroup]);
 
   const handleUpdateSet = (index, newWeight, newReps) => {
-    const updatedExerciseSets = new ExerciseSets(exerciseSets.exercise, exerciseSets.muscleGroup);
+    const updatedExerciseSets = new ExerciseSets(exerciseSets.exercise, selectedMuscleGroup);
     updatedExerciseSets.sets = [...exerciseSets.sets];
     updatedExerciseSets.updateSet(index, newWeight, newReps);
     setExerciseSets(updatedExerciseSets);
+  };
+
+  const handleAddSet = () => {
+    const updatedExerciseSets = new ExerciseSets(exerciseSets.exercise, selectedMuscleGroup);
+    const updatedBestExerciseSets = new ExerciseSets(bestExerciseSets.exercise, bestExerciseSets.muscleGroup);
+    updatedExerciseSets.sets = [...exerciseSets.sets];
+    updatedBestExerciseSets.sets = [...bestExerciseSets.sets];
+    updatedExerciseSets.addSet(exerciseSets.sets[0].weight, exerciseSets.sets[0].reps);
+    updatedBestExerciseSets.addSet(bestExerciseSets.sets[0].weight, bestExerciseSets.sets[0].reps);
+    setExerciseSets(updatedExerciseSets);
+    setBestExerciseSets(updatedBestExerciseSets);
+  };
+
+  const handleRemoveSet = () => {
+    const updatedExerciseSets = new ExerciseSets(exerciseSets.exercise, selectedMuscleGroup);
+    const updatedBestExerciseSets = new ExerciseSets(bestExerciseSets.exercise, bestExerciseSets.muscleGroup);
+    updatedExerciseSets.sets = [...exerciseSets.sets];
+    updatedBestExerciseSets.sets = [...bestExerciseSets.sets];
+    updatedExerciseSets.removeSet(updatedExerciseSets.sets.length-1);
+    updatedBestExerciseSets.removeSet(updatedBestExerciseSets.sets.length-1);
+    setExerciseSets(updatedExerciseSets);
+    setBestExerciseSets(updatedBestExerciseSets);
   };
 
   const logExercise = async (e) => {
@@ -279,7 +302,7 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                   {set.weight == 0 ? <p>No Previous Logs</p> : <p>Beat: {set.weight}kg for {set.reps} reps</p>}
                   <div className='flex-container'>
                     <div className='flex-item'>
-                      <label htmlFor={`weight-input-${index}`}>Weight (kg):</label>
+                      {index === 0 && <label htmlFor={`weight-input-${index}`}>Weight (kg):</label>}
                       <input
                         type='number'
                         id={`weight-input-${index}`}
@@ -296,7 +319,7 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                       }}>-5kg</button>
                     </div>
                     <div className='flex-item'>
-                      <label htmlFor={`reps-input-${index}`}>Reps:</label>
+                      {index === 0 && <label htmlFor={`reps-input-${index}`}>Reps:</label>}
                       <input
                         type='number'
                         id={`reps-input-${index}`}
@@ -317,7 +340,8 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
               ))}
 
               <div>
-                <button className='subtile-button' onClick={() => exerciseSets.addSet(exerciseSets.sets[0].weight,exerciseSets.sets[0].reps)}>Add Set</button>
+                <button type='button' className='subtile-button' onClick={handleAddSet}>Add Set</button>
+                <button type='button' className='subtile-button' onClick={handleRemoveSet}>Remove Set</button>
               </div>
               <div className='popup-buttons'>
                 <button type='submit'>Add Log</button>
