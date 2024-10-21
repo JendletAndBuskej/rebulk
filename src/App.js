@@ -85,23 +85,32 @@ function WorkoutSelection() {
 
 function MuscleGroupSelection() {
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState(null);
-  const [history, setHistory] = useState([]);
-  // const btnMuscleGroupSelection = (button) => { setSelectedMuscleGroup(button); };
-  const btnMuscleGroupSelection = (button) => {
-    setHistory([...history, selectedMuscleGroup]);
-    setSelectedMuscleGroup(button);
-  };
+  const [showPopup, setShowPopup] = useState(false);
+  const workoutsRef = firestore.collection('workouts');
+  const { uid } = auth.currentUser;
+  const workoutQuery = workoutsRef.where('user', '==', uid)
+  const [workouts] = useCollectionData(workoutQuery, { idField: 'id' });
+  const [selectedWorkout, setSelectedWorkout] = useState(false);
+  const [addedWorkout, setAddedWorkout] = useState('');
+  const btnMuscleGroupSelection = (button) => {setSelectedMuscleGroup(button);};
   const btnPrevPage = (button) => { setSelectedMuscleGroup(null); };
-  // const btnPrevPage = () => {
-  //   if (history.length > 0) {
-  //     const lastSelection = history.pop();
-  //     setSelectedMuscleGroup(lastSelection);
-  //     setHistory(history);
-  //   } else {
-  //     setSelectedMuscleGroup(null);
-  //     onBack();
-  //   }
-  // };
+
+  const capitalizeWords = (str) => {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
+  const addWorkout = async (e) => {
+    e.preventDefault();
+    const { uid } = auth.currentUser;
+    const formattedExerciseName = capitalizeWords(addedWorkout);
+    await workoutsRef.add({
+      user: uid,
+      workoutName: formattedExerciseName,
+      exercises: ["Incline Dumbell Press", "Shoulder Press"]
+    });
+    setAddedWorkout('');
+    setShowPopup(false);
+  };
 
   return (
     <div>
@@ -125,7 +134,47 @@ function MuscleGroupSelection() {
           </div>
         </div>
       )}
+      <hr class="custom-line"></hr>
+      {workouts && (
+        <div>
+          <div>
+          <h2>Select Workout</h2>
+          </div>
+          <div>
+          {workouts.map((workoutEntries, index) => (
+            <div>
+              <button className='mGrpSel' onClick={() => setSelectedWorkout(workoutEntries.workoutName)}>{workoutEntries.workoutName}</button>
+              <button className='mGrpSel' onClick={() => setSelectedWorkout(workoutEntries.workoutName)}>{workoutEntries.workoutName}</button>
+            </div>
+          ))}
+          </div>
+          <div>
+            <button className='subtile-button' onClick={() => setShowPopup(true)}>Add Workout</button>
+          </div>
+        </div>
+      )}
       {selectedMuscleGroup && < ExerciseSelection selectedMuscleGroup={selectedMuscleGroup} />}
+      {showPopup && (
+        <div className='popup-overlay'>
+          <div className='popup-content'>
+            <h2>Add New Workout</h2>
+            <form onSubmit={addWorkout}>
+              <label htmlFor='workoutName'>Workout Name:</label>
+              <input
+                type='text'
+                id='workouts'
+                value={addedWorkout}
+                onChange={(e) => setAddedWorkout(e.target.value)}
+                required
+                />
+              <div className='popup-buttons'>
+                <button type='submit'>Add Workout</button>
+                <button type='button' onClick={() => setShowPopup(false)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       {selectedMuscleGroup && <button onClick={btnPrevPage} className='back-button'>←</button>}
     </div>
   );
@@ -135,7 +184,6 @@ function ExerciseSelection({ selectedMuscleGroup }) {
   const exercisesRef = firestore.collection('exercises');
   const { uid } = auth.currentUser;
   const defaultExercises = getDefaultExercises(selectedMuscleGroup)
-  console.log(defaultExercises)
   const exerciseQuery = exercisesRef.where('musclegroup', '==', selectedMuscleGroup)
   const [exercises] = useCollectionData(exerciseQuery, { idField: 'id' });
   const [exercise, setExerciseName] = useState('');
