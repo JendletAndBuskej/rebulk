@@ -93,7 +93,7 @@ function MuscleGroupSelection() {
   const [selectedWorkout, setSelectedWorkout] = useState(false);
   const [addedWorkout, setAddedWorkout] = useState('');
   const btnMuscleGroupSelection = (button) => {setSelectedMuscleGroup(button);};
-  const btnPrevPage = (button) => { setSelectedMuscleGroup(null); };
+  const btnPrevPage = (button) => { setSelectedMuscleGroup(null); setSelectedWorkout(null);};
 
   const capitalizeWords = (str) => {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -106,7 +106,7 @@ function MuscleGroupSelection() {
     await workoutsRef.add({
       user: uid,
       workoutName: formattedExerciseName,
-      exercises: ["Incline Dumbell Press", "Shoulder Press"]
+      exercises: []
     });
     setAddedWorkout('');
     setShowPopup(false);
@@ -114,48 +114,55 @@ function MuscleGroupSelection() {
 
   return (
     <div>
-      {!selectedMuscleGroup && (
+      {!selectedMuscleGroup && !selectedWorkout && (
+      <div>
+        <h2>Select Muscle Group</h2>
         <div>
-          <h2>Select Muscle Group</h2>
-          <div>
-            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('chest')}>Chest</button>
-            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('back')}>Back</button>
-          </div>
-          <div>
-            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('shoulders')}>Shoulders</button>
-            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('legs')}>Legs</button>
-          </div>
-          <div>
-            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('triceps')}>Triceps</button>
-            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('biceps')}>Biceps</button>
-          </div>
-          <div>
-            <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('abs')}>Le Pinguini</button>
-          </div>
+          <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('chest')}>Chest</button>
+          <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('back')}>Back</button>
         </div>
-      )}
-      <hr class="custom-line"></hr>
-      {workouts && (
+        <div>
+          <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('shoulders')}>Shoulders</button>
+          <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('legs')}>Legs</button>
+        </div>
+        <div>
+          <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('triceps')}>Triceps</button>
+          <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('biceps')}>Biceps</button>
+        </div>
+        <div>
+          <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('abs')}>Le Pinguini</button>
+        </div>
+        <hr class="custom-line"></hr>
+        {workouts && (
         <div>
           <div>
           <h2>Select Workout</h2>
           </div>
           <div>
-          {workouts.map((workoutEntries, index) => (
-            <div>
-              <button className='mGrpSel' onClick={() => setSelectedWorkout(workoutEntries.workoutName)}>{workoutEntries.workoutName}</button>
-              <button className='mGrpSel' onClick={() => setSelectedWorkout(workoutEntries.workoutName)}>{workoutEntries.workoutName}</button>
-            </div>
-          ))}
+          {workouts.map((workoutEntries, index) => {
+            const nextWorkoutEntries = workouts[index + 1] !== undefined ? workouts[index + 1] : null;
+            return (
+              <div key={index}>
+                <button className='mGrpSel' onClick={() => setSelectedWorkout(workoutEntries.workoutName)}>
+                  {workoutEntries.workoutName}
+                </button>
+                {nextWorkoutEntries && (
+                  <button className='mGrpSel' onClick={() => setSelectedWorkout(nextWorkoutEntries.workoutName)}>
+                    {nextWorkoutEntries.workoutName}
+                  </button>
+                )}
+              </div>
+            );
+          }).filter((_, index) => index % 2 === 0)
+          }
           </div>
           <div>
             <button className='subtile-button' onClick={() => setShowPopup(true)}>Add Workout</button>
           </div>
         </div>
-      )}
-      {selectedMuscleGroup && < ExerciseSelection selectedMuscleGroup={selectedMuscleGroup} />}
-      {showPopup && (
-        <div className='popup-overlay'>
+        )}
+        {showPopup && (
+          <div className='popup-overlay'>
           <div className='popup-content'>
             <h2>Add New Workout</h2>
             <form onSubmit={addWorkout}>
@@ -169,15 +176,25 @@ function MuscleGroupSelection() {
                 />
               <div className='popup-buttons'>
                 <button type='submit'>Add Workout</button>
-                <button type='button' onClick={() => setShowPopup(false)}>Cancel</button>
+                <button type='button' onClick={() => {setShowPopup(false); setSelectedWorkout(addedWorkout)}}>Cancel</button>
               </div>
             </form>
           </div>
         </div>
+        )}
+      </div>
       )}
-      {selectedMuscleGroup && <button onClick={btnPrevPage} className='back-button'>←</button>}
+      {selectedMuscleGroup && < ExerciseSelection selectedMuscleGroup={selectedMuscleGroup} />}
+      {selectedWorkout && < WorkoutPage selectedWorkout={{selectedWorkout}} />}
+      {(selectedMuscleGroup || selectedWorkout) && <button onClick={btnPrevPage} className='back-button'>←</button>}
     </div>
   );
+}
+
+function WorkoutPage({ selectedWorkout }) {
+  return (
+    <div><p> Yo </p></div>
+  )
 }
 
 function ExerciseSelection({ selectedMuscleGroup }) {
