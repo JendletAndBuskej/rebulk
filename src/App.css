@@ -264,6 +264,24 @@ button.sub-option:hover {
     width: 100%;  /* Full-width on small screens */
   }
 }
+
+.delete-mode {
+  background-color: #e53935;  /* Red background for delete mode */
+  color: white;               /* Light text for contrast */
+}
+
+.delete-mode:hover {
+  background-color: #d32f2f;  /* Darker red on hover */
+}
+
+.delete-mode:focus {
+  background-color: #f44336;  /* Lighter red when focused */
+}
+
+.delete-mode:active {
+  background-color: #b71c1c;  /* Even darker red on click */
+}
+
 /* Button styles with consistent width */
 .eSel {
   background-color: #1e88e5;  /* Blue background */
@@ -427,5 +445,5 @@ button.adjust-button:active {
 }
 
 .subtile-button:active {
-  color: #333; /* Darker text color when clicked */
+  color: #333; 
 }

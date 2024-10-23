@@ -5,9 +5,10 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth';
 import 'firebase/compat/analytics';
+import { doc, deleteDoc } from 'firebase/firestore';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { useCollectionData, useCollection } from 'react-firebase-hooks/firestore';
 
 import getAppConfig from './firebaseConfig';
 import getDefaultExercises from './defaultExercises';
@@ -89,11 +90,12 @@ function MuscleGroupSelection() {
   const workoutsRef = firestore.collection('workouts');
   const { uid } = auth.currentUser;
   const workoutQuery = workoutsRef.where('user', '==', uid)
-  const [workouts] = useCollectionData(workoutQuery, { idField: 'id' });
+  const [workouts] = useCollection(workoutQuery, { idField: 'id' });
   const [selectedWorkout, setSelectedWorkout] = useState(false);
   const [addedWorkout, setAddedWorkout] = useState('');
   const btnMuscleGroupSelection = (button) => {setSelectedMuscleGroup(button);};
   const btnPrevPage = (button) => { setSelectedMuscleGroup(null); setSelectedWorkout(null);};
+  const [isDeleteMode, setIsDeleteMode] = useState(false);
 
   const capitalizeWords = (str) => {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -111,6 +113,15 @@ function MuscleGroupSelection() {
     setAddedWorkout('');
     setShowPopup(false);
   };
+  
+  const deleteWorkout = async (workoutId) => {
+    console.log(workoutId)
+    if (isDeleteMode) {
+      try {
+        await deleteDoc(doc(firestore, 'workouts', workoutId));
+      } catch (error) {
+        console.error('Error deleting workout:', error);
+  }}};
 
   return (
     <div>
@@ -132,23 +143,38 @@ function MuscleGroupSelection() {
         <div>
           <button className='mGrpSel' onClick={() => btnMuscleGroupSelection('abs')}>Le Pinguini</button>
         </div>
-        <hr class="custom-line"></hr>
+        <hr className="custom-line"></hr>
         {workouts && (
-        <div>
+          <div>
           <div>
           <h2>Select Workout</h2>
           </div>
           <div>
-          {workouts.map((workoutEntries, index) => {
-            const nextWorkoutEntries = workouts[index + 1] !== undefined ? workouts[index + 1] : null;
+          {workouts.docs.map((workoutEntries, index) => {
+            const nextWorkoutEntries = workouts.docs[index + 1] !== undefined ? workouts.docs[index + 1] : null;
             return (
               <div key={index}>
-                <button className='mGrpSel' onClick={() => setSelectedWorkout(workoutEntries.workoutName)}>
-                  {workoutEntries.workoutName}
+                {console.log(workoutEntries.id)}
+                <button className={`mGrpSel ${isDeleteMode ? 'delete-mode' : ''}`}  
+                onClick={() => {
+                  if (isDeleteMode) {
+                    deleteWorkout(workoutEntries.id);
+                  } else {
+                    setSelectedWorkout(workoutEntries.data().workoutName);
+                  }
+                }}>
+                  {workoutEntries.data().workoutName}
                 </button>
                 {nextWorkoutEntries && (
-                  <button className='mGrpSel' onClick={() => setSelectedWorkout(nextWorkoutEntries.workoutName)}>
-                    {nextWorkoutEntries.workoutName}
+                  <button className={`mGrpSel ${isDeleteMode ? 'delete-mode' : ''}`}  
+                  onClick={() => {
+                  if (isDeleteMode) {
+                    deleteWorkout(workoutEntries.id);
+                  } else {
+                    setSelectedWorkout(workoutEntries.data().workoutName);
+                  }
+                }}>
+                    {nextWorkoutEntries.data().workoutName}
                   </button>
                 )}
               </div>
@@ -158,6 +184,7 @@ function MuscleGroupSelection() {
           </div>
           <div>
             <button className='subtile-button' onClick={() => setShowPopup(true)}>Add Workout</button>
+            <button className='subtile-button' onClick={() => setIsDeleteMode(!isDeleteMode)}>Remove Workout</button>
           </div>
         </div>
         )}
