@@ -154,13 +154,12 @@ function MuscleGroupSelection() {
             const nextWorkoutEntries = workouts.docs[index + 1] !== undefined ? workouts.docs[index + 1] : null;
             return (
               <div key={index}>
-                {console.log(workoutEntries.id)}
                 <button className={`mGrpSel ${isDeleteMode ? 'delete-mode' : ''}`}  
                 onClick={() => {
                   if (isDeleteMode) {
                     deleteWorkout(workoutEntries.id);
                   } else {
-                    setSelectedWorkout(workoutEntries.data().workoutName);
+                    setSelectedWorkout(workoutEntries.data());
                   }
                 }}>
                   {workoutEntries.data().workoutName}
@@ -169,9 +168,9 @@ function MuscleGroupSelection() {
                   <button className={`mGrpSel ${isDeleteMode ? 'delete-mode' : ''}`}  
                   onClick={() => {
                   if (isDeleteMode) {
-                    deleteWorkout(workoutEntries.id);
+                    deleteWorkout(nextWorkoutEntries.id);
                   } else {
-                    setSelectedWorkout(workoutEntries.data().workoutName);
+                    setSelectedWorkout(nextWorkoutEntries.data());
                   }
                 }}>
                     {nextWorkoutEntries.data().workoutName}
@@ -203,7 +202,7 @@ function MuscleGroupSelection() {
                 />
               <div className='popup-buttons'>
                 <button type='submit'>Add Workout</button>
-                <button type='button' onClick={() => {setShowPopup(false); setSelectedWorkout(addedWorkout)}}>Cancel</button>
+                <button type='button' onClick={() => {setShowPopup(false); setSelectedWorkout(new Workout(addedWorkout))}}>Cancel</button>
               </div>
             </form>
           </div>
@@ -219,9 +218,75 @@ function MuscleGroupSelection() {
 }
 
 function WorkoutPage({ selectedWorkout }) {
+  const execises = selectedWorkout.selectedWorkout.exercises
+  console.log(execises)
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState('');
+  const btnExerciseSelection = (execise) => { setSelectedExercise(execise); };
+  const [isDeleteMode, setIsDeleteMode] = useState(false);
+
   return (
-    <div><p> Yo </p></div>
+    <div>
+      {!selectedExercise && (
+      <div>
+        <h2>Workout - {selectedWorkout.selectedWorkout.workoutName}</h2>
+        {execises.map((exerciseEntry, index) => {
+          return (
+            <div key={index}>
+              <button className={`eSel ${isDeleteMode ? 'delete-mode' : ''}`}  
+                  onClick={() => {
+                    if (isDeleteMode) {
+                      btnExerciseSelection(exerciseEntry);
+                    } else {
+                      btnExerciseSelection(exerciseEntry);
+                    }
+                  }}
+                  >
+                {exerciseEntry}
+              </button>
+            </div>
+          )
+        })}
+        {}
+        {showPopup && (
+          <div className='popup-overlay'>
+          <div className='popup-content'>
+            <h2>Add Exercise to Workout</h2>
+          </div>
+        </div>
+        )}
+        <button className='subtile-button' onClick={() => setShowPopup(true)}>Add Exercise to Workout</button>
+        <button className='subtile-button' onClick={() => setIsDeleteMode(!isDeleteMode)}>Remove Exercise from Workout</button>
+      </div>
+      )}
+      {selectedExercise && (< ExercisePage exerciseName={selectedExercise} selectedMuscleGroup={'chest'} />)}
+    </div>
   )
+}
+
+class Workout {
+  constructor(workoutName) {
+    this.workoutName = workoutName;
+    this.exercises = [];
+  }
+
+  addExercise(execiseName) {
+    this.exercises.push(execiseName);
+  }
+  removeExercise(index) {
+    if (index >= 0 && index < this.exercises.length) {
+      this.exercises.splice(index, 1);
+    }
+  }
+  importExercises(execiseNames) {
+    this.exercises = execiseNames
+  }
+  getExercise() {
+    return {
+      workoutName: this.workoutName,
+      exercises: this.exercises
+    }
+  }
 }
 
 function ExerciseSelection({ selectedMuscleGroup }) {
@@ -233,7 +298,6 @@ function ExerciseSelection({ selectedMuscleGroup }) {
   const [exercise, setExerciseName] = useState('');
   const [selectedExercise, setSelectedExercise] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-
   const btnExerciseSelection = (execise) => { setSelectedExercise(execise); };
 
   const capitalizeWords = (str) => {
@@ -314,7 +378,6 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
   const [loggedSets] = useCollectionData(setQuery, { idField: 'id' });
   const [showSets, setShowSets] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-
   const [exerciseSets, setExerciseSets] = useState(new ExerciseSets(exerciseName, selectedMuscleGroup));
   const [bestExerciseSets, setBestExerciseSets] = useState(null);
 
@@ -506,6 +569,5 @@ class ExerciseSets {
     }
   }
 }
-
 
 export default App;
