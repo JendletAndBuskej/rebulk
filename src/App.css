@@ -302,6 +302,43 @@ button.sub-option:hover {
   }
 }
 
+/* Button styles with consistent width */
+.eSelPopUp {
+  background-color: #1e88e5;  /* Blue background */
+  color: #e0e0e0;             /* Light text */
+  border: none;
+  padding: 1rem 2rem;
+  margin: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  width: 300px;                /* Fixed width for all buttons */
+  text-align: center;          /* Ensure text is centered */
+}
+
+/* Hover and focus effects for buttons */
+.eSelPopUp:hover {
+  background-color: #1565c0;  /* Darker blue on hover */
+}
+
+.eSelPopUp:focus {
+  outline: none;
+  background-color: #42a5f5;  /* Lighter blue when focused */
+}
+
+/* Button click active effect */
+.eSelPopUp:active {
+  background-color: #0d47a1;  /* Darker shade on click */
+}
+
+/* Responsive width: Optional if you want smaller buttons on mobile */
+@media (max-width: 600px) {
+  .eSelPopUp {
+    width: 100%;  /* Full-width on small screens */
+  }
+}
+
 .delete-mode {
   background-color: #e53935;  /* Red background for delete mode */
   color: white;               /* Light text for contrast */

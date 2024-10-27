@@ -97,14 +97,10 @@ function MuscleGroupSelection() {
   const btnPrevPage = (button) => { setSelectedMuscleGroup(null); setSelectedWorkout(null);};
   const [isDeleteMode, setIsDeleteMode] = useState(false);
 
-  const capitalizeWords = (str) => {
-    return str.replace(/\b\w/g, (char) => char.toUpperCase());
-  };
-
   const addWorkout = async (e) => {
     e.preventDefault();
     const { uid } = auth.currentUser;
-    const formattedExerciseName = capitalizeWords(addedWorkout);
+    const formattedExerciseName = _capitalizeWords(addedWorkout);
     await workoutsRef.add({
       user: uid,
       workoutName: formattedExerciseName,
@@ -211,25 +207,43 @@ function MuscleGroupSelection() {
       </div>
       )}
       {selectedMuscleGroup && < ExerciseSelection selectedMuscleGroup={selectedMuscleGroup} />}
-      {selectedWorkout && < WorkoutPage selectedWorkout={{selectedWorkout}} />}
+      {selectedWorkout && < WorkoutPage selectedWorkout={selectedWorkout} workoutsCollection={workoutsRef}/>}
       {(selectedMuscleGroup || selectedWorkout) && <button onClick={btnPrevPage} className='back-button'>←</button>}
     </div>
   );
 }
 
-function WorkoutPage({ selectedWorkout }) {
-  const execises = selectedWorkout.selectedWorkout.exercises
-  console.log(execises)
+function WorkoutPage({ selectedWorkout, workoutsCollection }) {
+  const execises = selectedWorkout.exercises
   const [showPopup, setShowPopup] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState('');
+  const [addedExercises, setAddedExercises] = useState([]);
   const btnExerciseSelection = (execise) => { setSelectedExercise(execise); };
   const [isDeleteMode, setIsDeleteMode] = useState(false);
+
+  // used for adding exercises to the workout
+  const exercisesRef = firestore.collection('exercises');
+  const { uid } = auth.currentUser;
+  const exerciseQuery = exercisesRef.where('user', '==', uid)
+  const [exercises] = useCollectionData(exerciseQuery, { idField: 'id' });
+  const defaultExercises = getDefaultExercises('all')
+
+  const addExercisesToWorkout = async (e) => {
+    e.preventDefault();
+    const { uid } = auth.currentUser;
+    await workoutsCollection.add({
+      user: uid,
+      workoutName: selectedWorkout.workoutName,
+      exercises: addedExercises
+    });
+    setAddedExercises([]);
+  };
 
   return (
     <div>
       {!selectedExercise && (
       <div>
-        <h2>Workout - {selectedWorkout.selectedWorkout.workoutName}</h2>
+        <h2>Workout - {selectedWorkout.workoutName}</h2>
         {execises.map((exerciseEntry, index) => {
           return (
             <div key={index}>
@@ -242,24 +256,37 @@ function WorkoutPage({ selectedWorkout }) {
                     }
                   }}
                   >
-                {exerciseEntry}
+                {exerciseEntry.exerciseName}
               </button>
             </div>
           )
         })}
         {}
         {showPopup && (
-          <div className='popup-overlay'>
+        <div className='popup-overlay'>
           <div className='popup-content'>
             <h2>Add Exercise to Workout</h2>
+            {Object.entries(defaultExercises).map(([muscleGroup, exercises]) => (
+              <div key={muscleGroup}>
+                {exercises.map((exercise, index) => (
+                  <div key={`${muscleGroup}-${index}`}>
+                    <button className='eSelPopUp' onClick={() => {}}>{exercise}</button>
+                  </div>
+                ))}
+              </div>
+            ))}
+            <div>
+              <button type='button' onClick={() => addExercisesToWorkout}>Add Exercises</button>
+              <button type='button' onClick={() => setShowPopup(false)}>Cancel</button>
+            </div>
           </div>
         </div>
         )}
-        <button className='subtile-button' onClick={() => setShowPopup(true)}>Add Exercise to Workout</button>
+        <button className='subtile-button' onClick={() => setShowPopup(true)}>Add Exercises to Workout</button>
         <button className='subtile-button' onClick={() => setIsDeleteMode(!isDeleteMode)}>Remove Exercise from Workout</button>
       </div>
       )}
-      {selectedExercise && (< ExercisePage exerciseName={selectedExercise} selectedMuscleGroup={'chest'} />)}
+      {selectedExercise && (< ExercisePage exerciseName={selectedExercise.exerciseName} selectedMuscleGroup={selectedExercise.muscleGroup} />)}
     </div>
   )
 }
@@ -270,8 +297,9 @@ class Workout {
     this.exercises = [];
   }
 
-  addExercise(execiseName) {
-    this.exercises.push(execiseName);
+  addExercise(exerciseName, muscleGroup) {
+    // this.exercises.push({"exerciseName": exerciseName, "muscleGroup": muscleGroup});
+    this.exercises.push({exerciseName, muscleGroup});
   }
   removeExercise(index) {
     if (index >= 0 && index < this.exercises.length) {
@@ -300,14 +328,14 @@ function ExerciseSelection({ selectedMuscleGroup }) {
   const [showPopup, setShowPopup] = useState(false);
   const btnExerciseSelection = (execise) => { setSelectedExercise(execise); };
 
-  const capitalizeWords = (str) => {
+  const _capitalizeWords = (str) => {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
   const addExercise = async (e) => {
     e.preventDefault();
     const { uid } = auth.currentUser;
-    const formattedExerciseName = capitalizeWords(exercise);
+    const formattedExerciseName = _capitalizeWords(exercise);
     await exercisesRef.add({
       user: uid,
       musclegroup: selectedMuscleGroup,
@@ -434,7 +462,6 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
     setShowPopup(false);
   };
 
-  console.log(exerciseSets)
   return (
     <div>
       <div>
@@ -569,5 +596,10 @@ class ExerciseSets {
     }
   }
 }
+
+
+const _capitalizeWords = (str) => {
+  return str.replace(/\b\w/g, (char) => char.toUpperCase());
+};
 
 export default App;
