@@ -155,7 +155,8 @@ function MuscleGroupSelection() {
                   if (isDeleteMode) {
                     deleteWorkout(workoutEntries.id);
                   } else {
-                    setSelectedWorkout(workoutEntries.data());
+                    // setSelectedWorkout(workoutEntries.data());
+                    setSelectedWorkout(workoutEntries);
                   }
                 }}>
                   {workoutEntries.data().workoutName}
@@ -166,7 +167,8 @@ function MuscleGroupSelection() {
                   if (isDeleteMode) {
                     deleteWorkout(nextWorkoutEntries.id);
                   } else {
-                    setSelectedWorkout(nextWorkoutEntries.data());
+                    // setSelectedWorkout(nextWorkoutEntries.data());
+                    setSelectedWorkout(nextWorkoutEntries);
                   }
                 }}>
                     {nextWorkoutEntries.data().workoutName}
@@ -207,44 +209,71 @@ function MuscleGroupSelection() {
       </div>
       )}
       {selectedMuscleGroup && < ExerciseSelection selectedMuscleGroup={selectedMuscleGroup} />}
-      {selectedWorkout && < WorkoutPage selectedWorkout={selectedWorkout} workoutsCollection={workoutsRef}/>}
+      {selectedWorkout && < WorkoutPage selectedWorkout={selectedWorkout}/>}
       {(selectedMuscleGroup || selectedWorkout) && <button onClick={btnPrevPage} className='back-button'>←</button>}
     </div>
   );
 }
 
-function WorkoutPage({ selectedWorkout, workoutsCollection }) {
-  const execises = selectedWorkout.exercises
+function WorkoutPage({ selectedWorkout }) {
+  console.log(selectedWorkout.data())
+  const exercises = selectedWorkout.data().exercises
+  const [workoutExercises, setWorkoutExercises] = useState(exercises);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState('');
   const [addedExercises, setAddedExercises] = useState([]);
   const btnExerciseSelection = (execise) => { setSelectedExercise(execise); };
   const [isDeleteMode, setIsDeleteMode] = useState(false);
-
+  
   // used for adding exercises to the workout
-  const exercisesRef = firestore.collection('exercises');
+  const workoutsRef = firestore.collection('workouts');
+  const userExercisesRef = firestore.collection('exercises');
   const { uid } = auth.currentUser;
-  const exerciseQuery = exercisesRef.where('user', '==', uid)
-  const [exercises] = useCollectionData(exerciseQuery, { idField: 'id' });
+  const userExerciseQuery = userExercisesRef.where('user', '==', uid)
+  const [userExercises] = useCollectionData(userExerciseQuery, { idField: 'id' });
   const defaultExercises = getDefaultExercises('all')
 
-  const addExercisesToWorkout = async (e) => {
-    e.preventDefault();
-    const { uid } = auth.currentUser;
-    await workoutsCollection.add({
-      user: uid,
-      workoutName: selectedWorkout.workoutName,
-      exercises: addedExercises
+  const handleExerciseClick = (exerciseName, muscleGroup) => {
+    setAddedExercises((prevExercises) => {
+      const exists = prevExercises.some(
+        (ex) => ex.exerciseName === exerciseName && ex.muscleGroup === muscleGroup
+      );
+      if (exists) {
+        return prevExercises.filter(
+          (ex) => ex.exerciseName !== exerciseName || ex.muscleGroup !== muscleGroup
+        );
+      } else {
+        return [...prevExercises, { exerciseName, muscleGroup }];
+      }
     });
-    setAddedExercises([]);
   };
 
+  const addExercisesToWorkout = async () => {
+    const { uid } = auth.currentUser;
+    const workoutDocRef = workoutsRef.doc(selectedWorkout.id);
+    try {
+      const workoutDoc = await workoutDocRef.get();
+      if (!workoutDoc.exists) {
+        console.error("Workout document does not exist.");
+        return;
+      }
+      const currentExercises = workoutDoc.data().exercises || [];
+      const updatedExercises = [...currentExercises, ...addedExercises];
+      await workoutDocRef.update({ exercises: updatedExercises });
+      setWorkoutExercises(updatedExercises);
+      setAddedExercises([]);
+      setShowPopup(false);
+    } catch (error) {
+      console.error("Error updating workout in Firestore:", error);
+    }
+  };
+  console.log(workoutExercises)
   return (
     <div>
       {!selectedExercise && (
       <div>
-        <h2>Workout - {selectedWorkout.workoutName}</h2>
-        {execises.map((exerciseEntry, index) => {
+        <h2>Workout - {selectedWorkout.data().workoutName}</h2>
+        {workoutExercises.map((exerciseEntry, index) => {
           return (
             <div key={index}>
               <button className={`eSel ${isDeleteMode ? 'delete-mode' : ''}`}  
@@ -261,7 +290,6 @@ function WorkoutPage({ selectedWorkout, workoutsCollection }) {
             </div>
           )
         })}
-        {}
         {showPopup && (
         <div className='popup-overlay'>
           <div className='popup-content'>
@@ -270,14 +298,21 @@ function WorkoutPage({ selectedWorkout, workoutsCollection }) {
               <div key={muscleGroup}>
                 {exercises.map((exercise, index) => (
                   <div key={`${muscleGroup}-${index}`}>
-                    <button className='eSelPopUp' onClick={() => {}}>{exercise}</button>
+                    <button className='eSelPopUp' onClick={() => handleExerciseClick(exercise, muscleGroup)}>{exercise}</button>
                   </div>
                 ))}
               </div>
             ))}
+            {userExercises.map((userExer, index) => {
+              return (
+                <div key={`userExerWO - ${index}`}>
+                  <button className='eSelPopUp' onClick={() => handleExerciseClick(userExer.exercise, userExer.muscleGroup)}>{userExer.exercise}</button>
+                </div>
+              )
+            })}
             <div>
-              <button type='button' onClick={() => addExercisesToWorkout}>Add Exercises</button>
-              <button type='button' onClick={() => setShowPopup(false)}>Cancel</button>
+              <button type='button' onClick={addExercisesToWorkout}>Add Exercises</button>
+              <button type='button' onClick={() => {setShowPopup(false); setAddedExercises([])}}>Cancel</button>
             </div>
           </div>
         </div>
