@@ -216,7 +216,6 @@ function MuscleGroupSelection() {
 }
 
 function WorkoutPage({ selectedWorkout }) {
-  console.log(selectedWorkout.data())
   const exercises = selectedWorkout.data().exercises
   const [workoutExercises, setWorkoutExercises] = useState(exercises);
   const [showPopup, setShowPopup] = useState(false);
@@ -224,7 +223,7 @@ function WorkoutPage({ selectedWorkout }) {
   const [addedExercises, setAddedExercises] = useState([]);
   const btnExerciseSelection = (execise) => { setSelectedExercise(execise); };
   const [isDeleteMode, setIsDeleteMode] = useState(false);
-  
+
   // used for adding exercises to the workout
   const workoutsRef = firestore.collection('workouts');
   const userExercisesRef = firestore.collection('exercises');
@@ -234,22 +233,21 @@ function WorkoutPage({ selectedWorkout }) {
   const defaultExercises = getDefaultExercises('all')
 
   const handleExerciseClick = (exerciseName, muscleGroup) => {
-    setAddedExercises((prevExercises) => {
-      const exists = prevExercises.some(
-        (ex) => ex.exerciseName === exerciseName && ex.muscleGroup === muscleGroup
+    const exercise = { exerciseName, muscleGroup };  
+    if (workoutExercises.some((ex) => ex.exerciseName === exerciseName)) {
+      setWorkoutExercises((prevExercises) =>
+        prevExercises.filter((ex) => ex.exerciseName !== exerciseName)
       );
-      if (exists) {
-        return prevExercises.filter(
-          (ex) => ex.exerciseName !== exerciseName || ex.muscleGroup !== muscleGroup
-        );
-      } else {
-        return [...prevExercises, { exerciseName, muscleGroup }];
-      }
-    });
+    } else if (addedExercises.some((ex) => ex.exerciseName === exerciseName)) {
+      setAddedExercises((prevExercises) =>
+        prevExercises.filter((ex) => ex.exerciseName !== exerciseName)
+      );
+    } else {
+      setAddedExercises((prevExercises) => [...prevExercises, exercise]);
+    }
   };
 
   const addExercisesToWorkout = async () => {
-    const { uid } = auth.currentUser;
     const workoutDocRef = workoutsRef.doc(selectedWorkout.id);
     try {
       const workoutDoc = await workoutDocRef.get();
@@ -258,7 +256,7 @@ function WorkoutPage({ selectedWorkout }) {
         return;
       }
       const currentExercises = workoutDoc.data().exercises || [];
-      const updatedExercises = [...currentExercises, ...addedExercises];
+      const updatedExercises = [...workoutExercises, ...addedExercises];
       await workoutDocRef.update({ exercises: updatedExercises });
       setWorkoutExercises(updatedExercises);
       setAddedExercises([]);
@@ -267,7 +265,26 @@ function WorkoutPage({ selectedWorkout }) {
       console.error("Error updating workout in Firestore:", error);
     }
   };
-  console.log(workoutExercises)
+  // console.log(workoutExercises)
+  const removeExerciseFromWorkout = async (exerciseToRemove) => {
+    const workoutDocRef = workoutsRef.doc(selectedWorkout.id);
+    try {
+      const workoutDoc = await workoutDocRef.get();
+      if (!workoutDoc.exists) {
+        console.error("Workout document does not exist.");
+        return;
+      }
+      const currentExercises = workoutDoc.data().exercises || [];
+      const updatedExercises = currentExercises.filter(
+        (exercise) => exercise.exerciseName !== exerciseToRemove.exerciseName
+      );
+      await workoutDocRef.update({ exercises: updatedExercises });
+      setWorkoutExercises(updatedExercises);
+    } catch (error) {
+      console.error("Error updating workout in Firestore:", error);
+    }
+  };
+
   return (
     <div>
       {!selectedExercise && (
@@ -279,7 +296,7 @@ function WorkoutPage({ selectedWorkout }) {
               <button className={`eSel ${isDeleteMode ? 'delete-mode' : ''}`}  
                   onClick={() => {
                     if (isDeleteMode) {
-                      btnExerciseSelection(exerciseEntry);
+                      removeExerciseFromWorkout(exerciseEntry);
                     } else {
                       btnExerciseSelection(exerciseEntry);
                     }
@@ -296,17 +313,25 @@ function WorkoutPage({ selectedWorkout }) {
             <h2>Add Exercise to Workout</h2>
             {Object.entries(defaultExercises).map(([muscleGroup, exercises]) => (
               <div key={muscleGroup}>
-                {exercises.map((exercise, index) => (
-                  <div key={`${muscleGroup}-${index}`}>
-                    <button className='eSelPopUp' onClick={() => handleExerciseClick(exercise, muscleGroup)}>{exercise}</button>
-                  </div>
-                ))}
+                {exercises.map((exercise, index) => {
+                  const isInWorkoutExercises = workoutExercises.some((ex) => ex.exerciseName === exercise);
+                  const isInAddedExercises = addedExercises.some((ex) => ex.exerciseName === exercise);
+                  const buttonClass = isInWorkoutExercises || isInAddedExercises ? 'eSelPopUpActive' : 'eSelPopUp';
+                  return (
+                    <div key={`${muscleGroup}-${index}`}>
+                      <button className={`${buttonClass}`} onClick={() => handleExerciseClick(exercise, muscleGroup)}>{exercise}</button>
+                    </div>
+                  )
+                })}
               </div>
             ))}
             {userExercises.map((userExer, index) => {
+              const isInWorkoutExercises = workoutExercises.some((ex) => ex.exerciseName === userExer.exercise);
+              const isInAddedExercises = addedExercises.some((ex) => ex.exerciseName === userExer.exercise);
+              const buttonClass = isInWorkoutExercises || isInAddedExercises ? 'eSelPopUpActive' : 'eSelPopUp';
               return (
                 <div key={`userExerWO - ${index}`}>
-                  <button className='eSelPopUp' onClick={() => handleExerciseClick(userExer.exercise, userExer.muscleGroup)}>{userExer.exercise}</button>
+                  <button className={`${buttonClass}`} onClick={() => handleExerciseClick(userExer.exercise, userExer.muscleGroup)}>{userExer.exercise}</button>
                 </div>
               )
             })}
@@ -333,7 +358,6 @@ class Workout {
   }
 
   addExercise(exerciseName, muscleGroup) {
-    // this.exercises.push({"exerciseName": exerciseName, "muscleGroup": muscleGroup});
     this.exercises.push({exerciseName, muscleGroup});
   }
   removeExercise(index) {
@@ -516,10 +540,10 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
             <form onSubmit={logExercise}>
               {bestExerciseSets && bestExerciseSets.sets.map((set, index) => (
                 <div className='wVertPad' key={index}>
-                  {set.weight == 0 ? <p>No Previous Logs</p> : <p>Beat: {set.weight}kg for {set.reps} reps</p>}
+                  {/* {set.weight == 0 ? <p>No Previous Logs</p> : <p>Beat: {set.weight}kg for {set.reps} reps</p>} */}
                   <div className='flex-container'>
                     <div className='flex-item'>
-                      {index === 0 && <label htmlFor={`weight-input-${index}`}>Weight (kg):</label>}
+                      {/* {index === 0 && <label htmlFor={`weight-input-${index}`}>Weight (kg):</label>} */}
                       <input
                         type='number'
                         id={`weight-input-${index}`}
@@ -528,15 +552,16 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                           handleUpdateSet(index, Number(e.target.value), exerciseSets.sets[index].reps);
                         }}
                         />
+                      <button type='button' className='beat-btn' onClick={() => {}}>{set.weight}kg</button>
                       <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight + 5, exerciseSets.sets[index].reps);
-                      }}>+5kg</button>
+                      }}>+5</button>
                       <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight - 5, exerciseSets.sets[index].reps);
-                      }}>-5kg</button>
+                      }}>-5</button>
                     </div>
                     <div className='flex-item'>
-                      {index === 0 && <label htmlFor={`reps-input-${index}`}>Reps:</label>}
+                      {/* {index === 0 && <label htmlFor={`reps-input-${index}`}>Reps:</label>} */}
                       <input
                         type='number'
                         id={`reps-input-${index}`}
@@ -545,12 +570,13 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                           handleUpdateSet(index, exerciseSets.sets[index].weight, Number(e.target.value));
                         }}
                         />
+                      <button type='button' className='beat-btn' onClick={() => {}}>{set.reps} reps</button>
                       <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps + 1);
-                      }}>+1 rep</button>
+                      }}>+1</button>
                       <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps - 1);
-                      }}>-1 rep</button>
+                      }}>-1</button>
                     </div>
                   </div>
                 </div>
@@ -574,23 +600,20 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
 
 function ShowLoggedSet({ loggedSets }) {
   return (
-    <>
-      <main>
-        {loggedSets && loggedSets.map(set => <LoggedSet key={set.id} set={set.exerciseSets} />)}
-      </main>
-    </>
-  );
-}
-
-function LoggedSet({ set }) {
-  return (
-    <div className='set-log'>
-      {set.forEach(setEntry => {
-        <div>
-          <p>{setEntry.weight}kg - {setEntry.reps} reps</p>
+    <main>
+      {loggedSets && loggedSets.map((logEntry, index) => (
+        <div key={index}>
+          {logEntry.exerciseSets.map((setsEntry, setIndex) => {
+            return (
+              <div key={setIndex}>
+                <p>{setsEntry.weight}kg - {setsEntry.reps} reps</p>
+              </div>
+            );
+          })}
+          <hr className="custom-line"></hr>
         </div>
-      })};
-    </div>
+      ))}
+    </main>
   );
 }
 
@@ -617,8 +640,6 @@ class ExerciseSets {
     if (index >= 0 && index < this.sets.length) {
       this.sets[index] = { weight: newWeight, reps: newReps };
     }
-    console.log('at update: ')
-    console.log(this.sets)
   }
   importExerciseSets(sets) {
     this.sets = sets
@@ -631,7 +652,6 @@ class ExerciseSets {
     }
   }
 }
-
 
 const _capitalizeWords = (str) => {
   return str.replace(/\b\w/g, (char) => char.toUpperCase());

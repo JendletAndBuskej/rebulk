@@ -208,7 +208,7 @@ button.sub-option:hover {
 
 /* Input fields inside the popup */
 .popup-content input {
-  width: 100%;
+  width: 50%;
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
@@ -335,6 +335,43 @@ button.sub-option:hover {
 /* Responsive width: Optional if you want smaller buttons on mobile */
 @media (max-width: 600px) {
   .eSelPopUp {
+    width: 100%;  /* Full-width on small screens */
+  }
+}
+
+.eSelPopUpActive {
+  background-color: #90caf9;  /* Blue background #1565c0 #66bb6a #b0bec5*/ 
+  color: #e0e0e0;             /* Light text */
+  border: none;
+  padding: 1rem 2rem;
+  margin: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  width: 325px;                /* Fixed width for all buttons */
+  height: 75px;                /* Fixed width for all buttons */
+  text-align: center;          /* Ensure text is centered */
+}
+
+/* Hover and focus effects for buttons */
+.eSelPopUpActive:hover {
+  background-color: #64b5f6;  /* Darker blue on hover */
+}
+
+.eSelPopUpActive:focus {
+  outline: none;
+  background-color: #90caf9;  /* Lighter blue when focused */
+}
+
+/* Button click active effect */
+.eSelPopUpActive:active {
+  background-color: #2196f3;  /* Darker shade on click */
+}
+
+/* Responsive width: Optional if you want smaller buttons on mobile */
+@media (max-width: 600px) {
+  .eSelPopUpActive {
     width: 100%;  /* Full-width on small screens */
   }
 }
@@ -466,6 +503,27 @@ button.adjust-button:active {
   background-color: #0d47a1;
 }
 
+button.beat-btn {
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  margin-right: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Button hover and active states */
+button.beat-btn:hover {
+  background-color: transparent;
+}
+
+button.beat-btn:active {
+  background-color: transparent;
+}
+
 .subtile-button {
   background-color: transparent; /* No background color */
   color: #888; /* Light gray text for subtle appearance */
@@ -485,3 +543,17 @@ button.adjust-button:active {
 .subtile-button:active {
   color: #333; 
 }
+
+.subtile-button:focus {
+  background-color: transparent; /* No background color */
+  color: #888; /* Light gray text for subtle appearance */
+  padding: 0.3rem 0.5rem; /* Minimal padding */
+  margin: 0.5rem;
+  border: none; /* No border */
+  border-radius: 0; /* No border radius for a flat look */
+  cursor: pointer;
+  font-size: 0.85rem; /* Smaller font size */
+  text-decoration: underline; /* Underlined to differentiate it from regular buttons */
+}
+
+
