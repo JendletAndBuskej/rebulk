@@ -337,7 +337,7 @@ function WorkoutPage({ selectedWorkout }) {
             })}
             <div>
               <button type='button' onClick={addExercisesToWorkout}>Add Exercises</button>
-              <button type='button' onClick={() => {setShowPopup(false); setAddedExercises([])}}>Cancel</button>
+              <button type='button' onClick={() => {setShowPopup(false); setAddedExercises([]); setWorkoutExercises(exercises)}}>Cancel</button>
             </div>
           </div>
         </div>
@@ -544,15 +544,18 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                   <div className='flex-container'>
                     <div className='flex-item'>
                       {/* {index === 0 && <label htmlFor={`weight-input-${index}`}>Weight (kg):</label>} */}
-                      <input
-                        type='number'
-                        id={`weight-input-${index}`}
-                        value={exerciseSets.sets[index].weight}
-                        onChange={(e) => {
-                          handleUpdateSet(index, Number(e.target.value), exerciseSets.sets[index].reps);
-                        }}
+                      <div className="containery">
+                        <input
+                          type='number'
+                          className="input-fieldYEAH"
+                          id={`weight-input-${index}`}
+                          value={exerciseSets.sets[index].weight}
+                          onChange={(e) => {
+                            handleUpdateSet(index, Number(e.target.value), exerciseSets.sets[index].reps);
+                          }}
                         />
-                      <button type='button' className='beat-btn' onClick={() => {}}>{set.weight}kg</button>
+                        <span className="text-field"> {set.weight} kg</span>
+                      </div>
                       <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight + 5, exerciseSets.sets[index].reps);
                       }}>+5</button>
@@ -562,15 +565,18 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                     </div>
                     <div className='flex-item'>
                       {/* {index === 0 && <label htmlFor={`reps-input-${index}`}>Reps:</label>} */}
-                      <input
-                        type='number'
-                        id={`reps-input-${index}`}
-                        value={exerciseSets.sets[index].reps}
-                        onChange={(e) => {
-                          handleUpdateSet(index, exerciseSets.sets[index].weight, Number(e.target.value));
-                        }}
+                      <div className="containery">
+                        <input
+                          type='number'
+                          className="input-fieldYEAH"
+                          id={`reps-input-${index}`}
+                          value={exerciseSets.sets[index].reps}
+                          onChange={(e) => {
+                            handleUpdateSet(index, exerciseSets.sets[index].weight, Number(e.target.value));
+                          }}
                         />
-                      <button type='button' className='beat-btn' onClick={() => {}}>{set.reps} reps</button>
+                        <span className="text-field"> {set.reps} reps </span>
+                      </div>
                       <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps + 1);
                       }}>+1</button>
