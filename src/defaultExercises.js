@@ -88,7 +88,7 @@ const getDefaultExercises = (muscleGroup) => {
         'legs' : legsExercises,
         'abs' : absExercises
     }
-    if (muscleGroup == 'all')
+    if (muscleGroup === 'all')
         return defaultExercises
     return defaultExercises[muscleGroup]
 }

@@ -340,7 +340,7 @@ button.sub-option:hover {
 }
 
 .eSelPopUpActive {
-  background-color: #90caf9;  /* Blue background #1565c0 #66bb6a #b0bec5*/ 
+  background-color: #64b5f6;  /* Darker blue on hover */
   color: #e0e0e0;             /* Light text */
   border: none;
   padding: 1rem 2rem;
@@ -356,12 +356,12 @@ button.sub-option:hover {
 
 /* Hover and focus effects for buttons */
 .eSelPopUpActive:hover {
-  background-color: #64b5f6;  /* Darker blue on hover */
+  background-color: #90caf9;  /* Blue background #1565c0 #66bb6a #b0bec5*/ 
 }
 
 .eSelPopUpActive:focus {
   outline: none;
-  background-color: #90caf9;  /* Lighter blue when focused */
+  background-color: #64b5f6;  /* Lighter blue when focused */
 }
 
 /* Button click active effect */
@@ -501,27 +501,6 @@ button.adjust-button:hover {
 
 button.adjust-button:active {
   background-color: #0d47a1;
-}
-
-button.beat-btn {
-  background-color: transparent;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  font-size: 0.9rem;
-  margin-right: 5px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-/* Button hover and active states */
-button.beat-btn:hover {
-  background-color: transparent;
-}
-
-button.beat-btn:active {
-  background-color: transparent;
 }
 
 .subtile-button {
