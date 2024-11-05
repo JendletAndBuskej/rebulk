@@ -127,7 +127,7 @@ function MuscleGroupSelection() {
           </div>
           <div>
             <button className='subtile-button' onClick={() => setShowPopup(true)}>Add Workout</button>
-            <button className='subtile-button' onClick={() => setIsDeleteMode(!isDeleteMode)}>Remove Workout</button>
+            <button className='subtile-button' onClick={() => setIsDeleteMode(!isDeleteMode)}>Remove</button>
           </div>
         </div>
         )}
@@ -453,17 +453,17 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                   <div className='flex-container'>
                     <div className='flex-item'>
                       {/* {index === 0 && <label htmlFor={`weight-input-${index}`}>Weight (kg):</label>} */}
-                      <div className='containery'>
+                      <div className='exerciseContainer'>
                         <input
                           type='number'
-                          className='input-fieldYEAH'
+                          className='exerciseInput'
                           id={`weight-input-${index}`}
                           value={exerciseSets.sets[index].weight}
                           onChange={(e) => {
                             handleUpdateSet(index, Number(e.target.value), exerciseSets.sets[index].reps);
                           }}
                         />
-                        <span className='text-field'> {set.weight} kg</span>
+                        <span className='exerciseTextField'> {set.weight} kg</span>
                       </div>
                       <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight + 5, exerciseSets.sets[index].reps);
@@ -474,17 +474,17 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                     </div>
                     <div className='flex-item'>
                       {/* {index === 0 && <label htmlFor={`reps-input-${index}`}>Reps:</label>} */}
-                      <div className='containery'>
+                      <div className='exerciseContainer'>
                         <input
                           type='number'
-                          className='input-fieldYEAH'
+                          className='exerciseInput'
                           id={`reps-input-${index}`}
                           value={exerciseSets.sets[index].reps}
                           onChange={(e) => {
                             handleUpdateSet(index, exerciseSets.sets[index].weight, Number(e.target.value));
                           }}
                         />
-                        <span className='text-field'> {set.reps} reps </span>
+                        <span className='exerciseTextField'> {set.reps} reps </span>
                       </div>
                       <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps + 1);

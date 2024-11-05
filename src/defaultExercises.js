@@ -1,6 +1,6 @@
 const getDefaultExercises = (muscleGroup) => {
     const mGrps = ['chest', 'back', 'legs', 'abs', 'triceps', 'biceps', 'shoulders', 'all']
-    if (!muscleGroup in mGrps)
+    if ((!muscleGroup) in mGrps)
         return []
 
     var chestExercises = [

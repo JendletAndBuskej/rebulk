@@ -1,0 +1,19 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "loggedSets",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "exercise",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

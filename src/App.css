@@ -5,564 +5,216 @@
   font-family: 'Roboto', sans-serif;
 }
 
+body, html {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+
 /* Body styling */
 body {
   background-color: #121212;
   color: #e0e0e0;
-  min-height: 100vh; /* Keep this */
-  overflow-y: auto; /* Enable scrolling on the body */
+  min-height: 100vh;
+  overflow-y: auto;
 }
 
-/* Container styling */
+/* Container */
 .container {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center content vertically within the container */
-  align-items: center; /* Center content horizontally */
-  min-height: 100vh; /* Fill viewport height */
-  padding: 20px; /* Optional padding */
-  margin-top: 20px; /* Add margin to the top */
-}
-
-/* Container for main content */
-div {
-  text-align: center;
-}
-div.wVertPad {
-  padding-bottom: 2em;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  max-width: 100%;
+  padding: 2px;
+  margin-top: 20px;
 }
 
 /* Main content styling */
 main {
   padding: 20px;
-  background-color: #1e1e1e; /* Dark background to match theme */
-  border: 1px solid #424242; /* Subtle border */
-  color: #e0e0e0; /* Light text for readability */
-  border-radius: 8px; /* Rounded corners */
-  max-width: 800px; /* Limit width for readability */
-  margin: 20px auto; /* Center the main content */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
-}
-
-.custom-line {
-  border: none;        /* Remove default border */
-  height: 2px;         /* Set the height of the line */
-  background-color: #666;  /* Set the color of the line */
-  /* background-color: #333;  Set the color of the line */
-  width: 100%;         /* Set the width of the line */
-  margin: 20px 0;      /* Set space above and below the line */
-}
-
-/* Main title */
-h1 {
-  color: #e0e0e0;
-  margin-bottom: 2rem;
-  font-size: 2rem;
-}
-
-/* Section headers for sub-options */
-h2 {
-  /* color: #64b5f6; */
-  color: #3e92db;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-/* Styling for buttons */
-button {
-  background-color: #1e88e5;
-  color: #e0e0e0;
-  border: none;
-  padding: 1rem 2rem;
-  margin: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
+  background-color: #1e1e1e;
+  border: 1px solid #424242;
   border-radius: 8px;
-  transition: background-color 0.3s ease;
+  max-width: 100%;
+  margin: 20px auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-/* Hover and focus effect for buttons */
-button:hover {
-  background-color: #1565c0;
-}
-
-button:focus {
-  outline: none;
-  background-color: #42a5f5;
-}
-
-/* Button click active effect */
-button:active {
-  background-color: #0d47a1;
-}
-
-/* Sub-option buttons */
-button.sub-option {
-  background-color: #424242;
-  color: #64b5f6;
-}
-
-button.sub-option:hover {
-  background-color: #303030;
-}
-
-/* Responsive design for smaller screens */
-@media (max-width: 600px) {
-  button {
-    width: 100%;
-    margin: 0.5rem 0;
-  }
-}
-
-.back-button {
-  background-color: transparent;
-  border: none;
-  color: #64b5f6;
-  font-size: 1.2rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 10px;
-  position: absolute; /* Make the button stick to the top */
-  top: 10px;
-  left: 10px;
-  transition: color 0.3s ease;
-}
-
-.back-button:hover {
-  color: #42a5f5;
-}
-
-.back-button:focus {
-  outline: none;
-}
-
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(18, 18, 18, 0.9); /* Dark transparent overlay */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000; /* Ensure the popup appears on top */
-}
-
-/* Popup content box */
-.popup-content {
-  background-color: #1e1e1e; /* Dark background to match theme */
-  padding: 20px;
-  border-radius: 8px;
-  width: 300px;
-  max-height: 80vh; /* Set a max height */
-  overflow-y: auto; /* Enable vertical scrolling */
+/* Titles */
+h1, h2 {
+  color: #e0e0e0;
   text-align: center;
-  color: #e0e0e0; /* Light text for readability */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
-  border: 1px solid #424242; /* Matching the theme */
 }
+h1 { font-size: 2rem; margin-bottom: 2rem; }
+h2 { font-size: 1.5rem; margin-bottom: 1rem; color: #3e92db; }
 
-/* Popup title */
-.popup-content h2 {
-  color: #64b5f6; /* Blue color for the title */
-  margin-bottom: 20px;
-}
-
-/* Popup buttons */
-.popup-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-.popup-buttons button {
-  padding: 10px 20px;
+/* Buttons */
+button {
   border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-/* Button for submitting the log */
-.popup-buttons button[type="submit"] {
-  background-color: #1e88e5; /* Blue color for log button */
-  color: white;
-}
-
-.popup-buttons button[type="submit"]:hover {
-  background-color: #1565c0; /* Hover effect */
-}
-
-/* Button for canceling the popup */
-.popup-buttons button[type="button"] {
-  background-color: #424242; /* Dark gray background for cancel button */
-  color: #e0e0e0;
-}
-
-.popup-buttons button[type="button"]:hover {
-  background-color: #303030; /* Hover effect for cancel button */
-}
-
-/* Input fields inside the popup */
-.popup-content input {
-  width: 50%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #2c2c2c; /* Dark background for inputs */
-  color: #e0e0e0;
-  font-size: 1rem;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Input focus effect inside the popup */
-.popup-content input:focus {
-  border-color: #64b5f6; /* Blue border on focus */
-  outline: none;
-  box-shadow: 0 0 8px rgba(100, 181, 246, 0.8); /* Light blue shadow */
-}
-
-
-/* Button styles with consistent width */
-.mGrpSel {
-  background-color: #1e88e5;  /* Blue background */
-  color: #e0e0e0;             /* Light text */
-  border: none;
+  background-color: #1e88e5;
   padding: 1rem 2rem;
-  margin: 0.5rem;
+  margin: 0.5rem 0rem 0.5rem 0rem;
   font-size: 1rem;
   cursor: pointer;
   border-radius: 8px;
   transition: background-color 0.3s ease;
-  width: 200px;                /* Fixed width for all buttons */
-  text-align: center;          /* Ensure text is centered */
+  justify-content: center;
 }
 
-/* Hover and focus effects for buttons */
-.mGrpSel:hover {
-  background-color: #1565c0;  /* Darker blue on hover */
+button:hover { background-color: #1565c0; }
+button:focus { outline: none; background-color: #42a5f5; }
+button:active { background-color: #0d47a1; }
+
+.subtile-button, .back-button {
+  background-color: transparent;
+  padding: 0.1rem 0.2rem;
+  color: #888;
+  text-decoration: underline;
+  font-size: 0.85rem;
+  width: 40%;
 }
 
-.mGrpSel:focus {
-  outline: none;
-  background-color: #42a5f5;  /* Lighter blue when focused */
-}
+button.sub-option { background-color: #424242; color: #64b5f6; }
+button.sub-option:hover { background-color: #303030; }
 
-/* Button click active effect */
-.mGrpSel:active {
-  background-color: #0d47a1;  /* Darker shade on click */
-}
-
-/* Responsive width: Optional if you want smaller buttons on mobile */
-@media (max-width: 600px) {
-  .mGrpSel {
-    width: 100%;  /* Full-width on small screens */
-  }
-}
-
-/* Button styles with consistent width */
-.eSel {
-  background-color: #1e88e5;  /* Blue background */
-  color: #e0e0e0;             /* Light text */
-  border: none;
-  padding: 1rem 2rem;
-  margin: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
-  width: 400px;                /* Fixed width for all buttons */
-  text-align: center;          /* Ensure text is centered */
-}
-
-/* Hover and focus effects for buttons */
-.eSel:hover {
-  background-color: #1565c0;  /* Darker blue on hover */
-}
-
-.eSel:focus {
-  outline: none;
-  background-color: #42a5f5;  /* Lighter blue when focused */
-}
-
-/* Button click active effect */
-.eSel:active {
-  background-color: #0d47a1;  /* Darker shade on click */
-}
-
-/* Responsive width: Optional if you want smaller buttons on mobile */
-@media (max-width: 600px) {
-  .eSel {
-    width: 100%;  /* Full-width on small screens */
-  }
-}
-
-/* Button styles with consistent width */
-.eSelPopUp {
-  background-color: #1e88e5;  /* Blue background */
-  color: #e0e0e0;             /* Light text */
-  border: none;
-  padding: 1rem 2rem;
-  margin: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
-  width: 300px;                /* Fixed width for all buttons */
-  text-align: center;          /* Ensure text is centered */
-}
-
-/* Hover and focus effects for buttons */
-.eSelPopUp:hover {
-  background-color: #1565c0;  /* Darker blue on hover */
-}
-
-.eSelPopUp:focus {
-  outline: none;
-  background-color: #42a5f5;  /* Lighter blue when focused */
-}
-
-/* Button click active effect */
-.eSelPopUp:active {
-  background-color: #0d47a1;  /* Darker shade on click */
-}
-
-/* Responsive width: Optional if you want smaller buttons on mobile */
-@media (max-width: 600px) {
-  .eSelPopUp {
-    width: 100%;  /* Full-width on small screens */
-  }
-}
-
-.eSelPopUpActive {
-  background-color: #64b5f6;  /* Darker blue on hover */
-  color: #e0e0e0;             /* Light text */
-  border: none;
-  padding: 1rem 2rem;
-  margin: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
-  width: 325px;                /* Fixed width for all buttons */
-  height: 75px;                /* Fixed width for all buttons */
-  text-align: center;          /* Ensure text is centered */
-}
-
-/* Hover and focus effects for buttons */
-.eSelPopUpActive:hover {
-  background-color: #90caf9;  /* Blue background #1565c0 #66bb6a #b0bec5*/ 
-}
-
-.eSelPopUpActive:focus {
-  outline: none;
-  background-color: #64b5f6;  /* Lighter blue when focused */
-}
-
-/* Button click active effect */
-.eSelPopUpActive:active {
-  background-color: #2196f3;  /* Darker shade on click */
-}
-
-/* Responsive width: Optional if you want smaller buttons on mobile */
-@media (max-width: 600px) {
-  .eSelPopUpActive {
-    width: 100%;  /* Full-width on small screens */
-  }
-}
-
-.delete-mode {
-  background-color: #e53935;  /* Red background for delete mode */
-  color: white;               /* Light text for contrast */
-}
-
-.delete-mode:hover {
-  background-color: #d32f2f;  /* Darker red on hover */
-}
-
-.delete-mode:focus {
-  background-color: #f44336;  /* Lighter red when focused */
-}
-
-.delete-mode:active {
-  background-color: #b71c1c;  /* Even darker red on click */
-}
-
-
-/* Popup overlay to cover the screen */
+/* Popup overlay */
 .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(18, 18, 18, 0.9); /* Dark overlay */
+  background-color: rgba(18, 18, 18, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-/* Rows */
-.row {
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* Label and Input Styling */
-label {
-  margin-right: 10px;
-}
-
-input {
-  width: 60px;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #2c2c2c;
-  color: #e0e0e0;
+  z-index: 1000;
 }
 
 /* Popup content */
 .popup-content {
   background-color: #1e1e1e;
-  color: #e0e0e0;
-  padding: 20px;
-  border-radius: 8px;
-  width: 400px; /* Increased width for more space */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-
-/* Flex container for weight and reps as columns */
-.flex-container {
-  display: flex;
-  justify-content: space-between; /* Space between weight and reps */
-  gap: 20px; /* Gap between columns */
-}
-
-/* Each flex item (column for weight or reps) */
-.flex-item {
-  flex: 1;
-}
-
-/* Label styling */
-label {
-  font-size: 1rem;
-  margin-bottom: 5px;
-  display: block;
-  color: #64b5f6; /* Blue color for labels */
-}
-
-/* Input field styling */
-input {
-  width: 100%; /* Make the input take the full width of its column */
   padding: 10px;
-  font-size: 1.2rem; /* Larger input text */
-  margin-bottom: 10px;
+  border-radius: 8px;
+  /* width: 300px; */
+  width: 95%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+/* Popup buttons */
+.popup-buttons button {
+  padding: 10px 20px;
+  font-size: 1rem;
+}
+
+/* ExercisePage-specific styling */
+.wVertPad {
+  padding-bottom: 2em;
+}
+
+/* Input */
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #2c2c2c;
   color: #e0e0e0;
+  font-size: 1rem;
 }
 
-/* Hide arrows from number input */
+input:focus {
+  border-color: #64b5f6; /* Blue border on focus */
+  outline: none;
+  box-shadow: 0 0 8px rgba(100, 181, 246, 0.8); /* Light blue shadow */
+}
+/* Remove arrows from number input fields */
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none;
   margin: 0;
 }
+
 input[type=number] {
   -moz-appearance: textfield;
 }
 
-/* Button styling for the plus/minus buttons */
+/* Exercise container for weight and reps with input adjustments */
+.exerciseContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 0 5px;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.exerciseInput {
+  width: 50%;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #2c2c2c;
+  color: #e0e0e0;
+  font-size: 1.2rem;
+  text-align: center;
+}
+.exerciseInput:focus {
+  border-color: #64b5f6; /* Blue border on focus */
+  outline: none;
+  box-shadow: 0 0 8px rgba(100, 181, 246, 0.8); /* Light blue shadow */
+}
+
+.exerciseTextField {
+  flex-grow: 1;
+  text-align: center;
+}
+/* Flex containers */
+.flex-container { display: flex; gap: 10px; }
+.flex-item { flex: 1; }
+
+/* Mobile-specific styling */
+@media (max-width: 600px) {
+  button, .mGrpSel, .eSel, .eSelPopUp, .eSelPopUpActive { width: 100%; }
+}
+
+/* Container for adjust buttons to place them side by side */
+.adjust-buttons {
+  display: flex;
+  gap: 20px; /* Space between the buttons */
+}
+
+/* Button styling remains the same */
 button.adjust-button {
   background-color: #1e88e5;
   color: #fff;
   border: none;
-  padding: 5px 10px;
+  padding: 0.1px 0.2px;
+  margin: 0.5rem 0.1rem 0.1rem 0.1rem ;
+  width: 45%;
   font-size: 0.9rem;
-  margin-right: 5px;
-  border-radius: 5px;
+  border-radius: 2px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-/* Button hover and active states */
-button.adjust-button:hover {
-  background-color: #1565c0;
+button.adjust-button:hover { background-color: #1565c0; }
+button.adjust-button:active { background-color: #0d47a1; }
+
+.custom-line {
+  height: 2px;
+  background-color: #666;
+  margin: 20px 0;
 }
 
-button.adjust-button:active {
-  background-color: #0d47a1;
-}
-
-.subtile-button {
-  background-color: transparent; /* No background color */
-  color: #888; /* Light gray text for subtle appearance */
-  padding: 0.3rem 0.5rem; /* Minimal padding */
-  margin: 0.5rem;
-  border: none; /* No border */
-  border-radius: 0; /* No border radius for a flat look */
-  cursor: pointer;
-  font-size: 0.85rem; /* Smaller font size */
-  text-decoration: underline; /* Underlined to differentiate it from regular buttons */
-}
-
-.subtile-button:hover {
-  color: #555; /* Slightly darker text color on hover */
-}
-
-.subtile-button:active {
-  color: #333; 
-}
-
-.subtile-button:focus {
-  background-color: transparent; /* No background color */
-  color: #888; /* Light gray text for subtle appearance */
-  padding: 0.3rem 0.5rem; /* Minimal padding */
-  margin: 0.5rem;
-  border: none; /* No border */
-  border-radius: 0; /* No border radius for a flat look */
-  cursor: pointer;
-  font-size: 0.85rem; /* Smaller font size */
-  text-decoration: underline; /* Underlined to differentiate it from regular buttons */
-}
-
-
-.containery {
-  display: flex;
-  align-items: center;
-  width: 100%; /* Takes full width of parent */
-  border: 1px solid #ccc;
-  padding: 0px 0px 0px 5px;
-  border-radius: 8px;
-  margin: 0px 0;
-  box-sizing: border-box;
-}
-
-.input-fieldYEAH {
-  width: 70%; /* 30% of the container */
-  height: 100%; /* 30% of the container */
-  padding: 0px 0px 0px 0px;
-  border: 1px solid #ccc;;
-  border-radius: 5px;
-  outline: none;
-}
-
-.divider {
-  width: 1px;
-  height: 100%;
-  background-color: #ccc;
-  /* margin: 0 16px; */
-}
-
-.text-field {
-  flex-grow: 1; /* Takes the remaining space */
-}
+/* Delete mode styling */
+.delete-mode { background-color: #e53935; color: white; }
+.delete-mode:hover { background-color: #d32f2f; }
+.delete-mode:active { background-color: #b71c1c; }
