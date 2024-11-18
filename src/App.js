@@ -536,10 +536,11 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                 <button type='button' className='subtile-button' onClick={handleRemoveSet}>Remove Set</button>
               </div>
               {/* <div className='popup-buttons'> */}
-              <div className='button-container'>
-                <button type='submit' className="add-cancel-buttons add-button">Add Log</button>
-                <button type='button' className="add-cancel-buttons cancel-button" onClick={() => setShowPopup(false)}>Cancel</button>
-              </div>
+              <div className='wVertPad'></div>
+                <div className='button-container'>
+                  <button type='submit' className="add-cancel-buttons add-button">Add Log</button>
+                  <button type='button' className="add-cancel-buttons cancel-button" onClick={() => setShowPopup(false)}>Cancel</button>
+                </div>
             </form>
           </div>
         </div>
