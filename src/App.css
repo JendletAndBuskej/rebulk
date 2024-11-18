@@ -55,7 +55,7 @@ button {
   border: none;
   background-color: #1e88e5;
   padding: 1rem 2rem;
-  margin: 0.5rem 0rem 0.5rem 0rem;
+  margin: 0.5rem 1rem 0.5rem 0rem;
   font-size: 1rem;
   cursor: pointer;
   border-radius: 8px;
@@ -67,7 +67,43 @@ button:hover { background-color: #1565c0; }
 button:focus { outline: none; background-color: #42a5f5; }
 button:active { background-color: #0d47a1; }
 
-.subtile-button, .back-button {
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+  margin: 0 auto;
+}
+
+.add-cancel-buttons {
+  width: 45%;
+  padding: 10px;
+  font-size: 0.9rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.add-button {
+  background-color: #1e88e5;
+  color: white;
+  border: none;
+}
+
+button.cancel-button {
+  background-color: #424242;
+  color: #e0e0e0;
+  border: none;
+}
+
+button.add-button:hover {
+  background-color: #1565c0;
+}
+
+button.cancel-button:hover {
+  background-color: #303030;
+}
+
+.subtile-button {
   background-color: transparent;
   padding: 0.1rem 0.2rem;
   color: #888;
@@ -76,14 +112,42 @@ button:active { background-color: #0d47a1; }
   width: 40%;
 }
 
+.back-button {
+  width: 40px;
+  position: absolute;
+  top: 10px; /* Adjust as needed for spacing from the top */
+  left: 10px; /* Adjust as needed for spacing from the left */
+  background-color: transparent;
+  border: none;
+  color: #64b5f6;
+  font-size: 1.2rem; /* Adjust to control icon size */
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0; /* Remove padding */
+  line-height: 1; /* Ensures no extra space around the symbol */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.back-button:hover {
+  color: #42a5f5; /* Optional hover effect */
+}
+
+.back-button:focus {
+  outline: none;
+}
+
 button.sub-option { background-color: #424242; color: #64b5f6; }
 button.sub-option:hover { background-color: #303030; }
 
 /* Popup overlay */
 .popup-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 100%;
   height: 100%;
   background-color: rgba(18, 18, 18, 0.9);
@@ -91,6 +155,13 @@ button.sub-option:hover { background-color: #303030; }
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
+
+@media (min-width: 600px) {
+  .popup-overlay {
+    width: 50%; /* Adjust for larger screens */
+    max-width: 400px;
+  }
 }
 
 /* Popup content */
@@ -180,9 +251,20 @@ input[type=number] {
 .flex-container { display: flex; gap: 10px; }
 .flex-item { flex: 1; }
 
-/* Mobile-specific styling */
 @media (max-width: 600px) {
-  button, .mGrpSel, .eSel, .eSelPopUp, .eSelPopUpActive { width: 100%; }
+  .mGrpSel, .eSel, .eSelPopUp, .eSelPopUpActive {
+    width: 300px; /* Fixed width for smaller screens */
+    margin: 0.5rem auto; /* Centers the buttons horizontally */
+    display: block; /* Ensures the button occupies its own line */
+  }
+
+  /* Ensure the container centers buttons */
+  .mGrpSel-container, .eSel-container {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: center; /* Center buttons horizontally */
+    gap: 10px; /* Space between buttons */
+  }
 }
 
 /* Container for adjust buttons to place them side by side */
@@ -217,4 +299,32 @@ button.adjust-button:active { background-color: #0d47a1; }
 /* Delete mode styling */
 .delete-mode { background-color: #e53935; color: white; }
 .delete-mode:hover { background-color: #d32f2f; }
-.delete-mode:active { background-color: #b71c1c; }
+.delete-mode:active { background-color: #e53935; }
+
+
+
+/* Container to hold mGrpSel buttons */
+.mGrpSel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Make all buttons the same width */
+}
+
+/* mGrpSel button styling */
+/* .mGrpSel {
+  background-color: #1e88e5;
+  color: #e0e0e0;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  flex: 1; /* Allows buttons to stretch to the same width */
+  /* text-align: center;  */
+/* } */ 
+
+.mGrpSel:hover {
+  background-color: #1565c0;
+}
+

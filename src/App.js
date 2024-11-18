@@ -97,9 +97,9 @@ function MuscleGroupSelection() {
         }
         <hr className='custom-line'></hr>
         {workouts && (
+        <div>
           <div>
-          <div>
-          <h2>Select Workout</h2>
+            <h2>Select Workout</h2>
           </div>
           <div>
           {workouts.docs.map((workoutEntries, index) => {
@@ -125,7 +125,7 @@ function MuscleGroupSelection() {
           }).filter((_, index) => index % 2 === 0)
           }
           </div>
-          <div>
+          <div className='button-container'>
             <button className='subtile-button' onClick={() => setShowPopup(true)}>Add Workout</button>
             <button className='subtile-button' onClick={() => setIsDeleteMode(!isDeleteMode)}>Remove</button>
           </div>
@@ -145,8 +145,9 @@ function MuscleGroupSelection() {
                 required
                 />
               <div className='popup-buttons'>
-                <button type='submit'>Add Workout</button>
-                <button type='button' onClick={() => {setShowPopup(false); setSelectedWorkout(new Workout(addedWorkout))}}>Cancel</button>
+                {/* <button type='submit' onClick={() => setSelectedWorkout(new Workout(addedWorkout))}>Add Workout</button> */}
+                <button type='submit' >Add Workout</button>
+                <button type='button' onClick={() => {setShowPopup(false)}}>Cancel</button>
               </div>
             </form>
           </div>
@@ -232,22 +233,23 @@ function WorkoutPage({ selectedWorkout }) {
   return (
     <div>
       {!selectedExercise && (
+      // <div className='container'>
       <div>
         <h2>Workout - {selectedWorkout.data().workoutName}</h2>
         {workoutExercises.map((exerciseEntry, index) => {
           return (
             <div key={index}>
-              <button className={`eSel ${isDeleteMode ? 'delete-mode' : ''}`}  
+              <button className={`mGrpSel ${isDeleteMode ? 'delete-mode' : ''}`}  
                   onClick={() => 
                     {isDeleteMode ? removeExerciseFromWorkout(exerciseEntry) : btnExerciseSelection(exerciseEntry)}
-              }>
+                  }>
                 {exerciseEntry.exerciseName}
               </button>
             </div>
           )
         })}
         {showPopup && (
-        <div className='popup-overlay'>
+          <div className='popup-overlay'>
           <div className='popup-content'>
             <h2>Add Exercise to Workout</h2>
             {Object.entries(defaultExercises).map(([muscleGroup, exercises]) => (
@@ -281,8 +283,10 @@ function WorkoutPage({ selectedWorkout }) {
           </div>
         </div>
         )}
-        <button className='subtile-button' onClick={() => setShowPopup(true)}>Add Exercises to Workout</button>
-        <button className='subtile-button' onClick={() => setIsDeleteMode(!isDeleteMode)}>Remove Exercise from Workout</button>
+        <div className='button-container'>
+          <button className='subtile-button' onClick={() => setShowPopup(true)}>Add Exercises to Workout</button>
+          <button className='subtile-button' onClick={() => setIsDeleteMode(!isDeleteMode)}>Remove Exercise from Workout</button>
+        </div>
       </div>
       )}
       {selectedExercise && (< ExercisePage exerciseName={selectedExercise.exerciseName} selectedMuscleGroup={selectedExercise.muscleGroup} />)}
@@ -435,7 +439,7 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
       <div>
         <h2>{exerciseName}</h2>
       </div>
-      <div>
+      <div className='mGrpSel-container'>
         <button onClick={() => setShowPopup(true)}>Create Log</button>
         <button onClick={() => setShowSets(!showSets)}>{showSets ? 'Hide Logged Sets' : 'Show Logged Sets'}</button>
       </div>
@@ -452,18 +456,34 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                   {/* {set.weight == 0 ? <p>No Previous Logs</p> : <p>Beat: {set.weight}kg for {set.reps} reps</p>} */}
                   <div className='flex-container'>
                     <div className='flex-item'>
-                      {/* {index === 0 && <label htmlFor={`weight-input-${index}`}>Weight (kg):</label>} */}
+                      {/* {index === 0 && <label htmlFor={`weight-input-${index}`}>Weight (kg):</label>} */}                      
                       <div className='exerciseContainer'>
                         <input
-                          type='number'
+                          type='text'
                           className='exerciseInput'
                           id={`weight-input-${index}`}
-                          value={exerciseSets.sets[index].weight}
+                          value={exerciseSets.sets[index].weight.toString()}
                           onChange={(e) => {
-                            handleUpdateSet(index, Number(e.target.value), exerciseSets.sets[index].reps);
+                            let inputValue = e.target.value;
+                            if (/^\d*\.?\d*$/.test(inputValue)) {
+                              if (inputValue.startsWith('0') && inputValue[1] !== '.' && inputValue.length > 1) {
+                                inputValue = inputValue.slice(1);
+                              }
+                              handleUpdateSet(index, inputValue === '' ? '' : inputValue, exerciseSets.sets[index].reps);
+                            }
+                          }}
+                          onBlur={(e) => {
+                            const inputValue = e.target.value;
+                            if (inputValue.endsWith('.')) {
+                              handleUpdateSet(index, parseFloat(inputValue.slice(0, -1)), exerciseSets.sets[index].reps);
+                            } else if (inputValue === '') {
+                              handleUpdateSet(index, 0, exerciseSets.sets[index].reps);
+                            } else {
+                              handleUpdateSet(index, parseFloat(inputValue), exerciseSets.sets[index].reps);
+                            }
                           }}
                         />
-                        <span className='exerciseTextField'> {set.weight} kg</span>
+                        <span className='exerciseTextField'> {exerciseSets.sets[index].weight} kg</span>
                       </div>
                       <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight + 5, exerciseSets.sets[index].reps);
@@ -476,15 +496,29 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                       {/* {index === 0 && <label htmlFor={`reps-input-${index}`}>Reps:</label>} */}
                       <div className='exerciseContainer'>
                         <input
-                          type='number'
+                          type='text'
                           className='exerciseInput'
                           id={`reps-input-${index}`}
-                          value={exerciseSets.sets[index].reps}
+                          value={exerciseSets.sets[index].reps.toString()}
                           onChange={(e) => {
-                            handleUpdateSet(index, exerciseSets.sets[index].weight, Number(e.target.value));
+                            let inputValue = e.target.value;
+                            if (/^\d*$/.test(inputValue)) {
+                              if (inputValue.startsWith('0') && inputValue.length > 1) {
+                                inputValue = inputValue.slice(1);
+                              }
+                              handleUpdateSet(index, exerciseSets.sets[index].weight, inputValue === '' ? '' : parseInt(inputValue, 10));
+                            }
+                          }}
+                          onBlur={(e) => {
+                            const inputValue = e.target.value;
+                            if (inputValue === '') {
+                              handleUpdateSet(index, exerciseSets.sets[index].weight, 0);
+                            } else {
+                              handleUpdateSet(index, exerciseSets.sets[index].weight, parseInt(inputValue, 10));
+                            }
                           }}
                         />
-                        <span className='exerciseTextField'> {set.reps} reps </span>
+                        <span className='exerciseTextField'> {exerciseSets.sets[index].reps} reps </span>
                       </div>
                       <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps + 1);
@@ -497,13 +531,14 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                 </div>
               ))}
 
-              <div>
+              <div className='button-container'>
                 <button type='button' className='subtile-button' onClick={handleAddSet}>Add Set</button>
                 <button type='button' className='subtile-button' onClick={handleRemoveSet}>Remove Set</button>
               </div>
-              <div className='popup-buttons'>
-                <button type='submit'>Add Log</button>
-                <button type='button' onClick={() => setShowPopup(false)}>Cancel</button>
+              {/* <div className='popup-buttons'> */}
+              <div className='button-container'>
+                <button type='submit' className="add-cancel-buttons add-button">Add Log</button>
+                <button type='button' className="add-cancel-buttons cancel-button" onClick={() => setShowPopup(false)}>Cancel</button>
               </div>
             </form>
           </div>
