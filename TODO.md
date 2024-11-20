@@ -4,6 +4,12 @@
 4. Dropset check box
 5. Set default increment for an exercise
 6. Fix filter for logged sets, can see other peoples (NO BUENO)
-7. Add a check  for "New PB" (the one that will appear)
-8. Fix css buttons for computer
-9. Fix back button
+7. Add a check for "New PB" (the one that will appear) / Some "algo" for deciding new PB + allow for selecting which one is PB
+8. Allow for deleting exercises
+9. Fix css buttons for computer
+10. Fix back button
+11. Sign out
+12. Add email-sign in
+13. Comparisons between people
+14. Plots of different kind
+15. Weight Tracking
