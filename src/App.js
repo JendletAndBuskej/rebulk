@@ -87,7 +87,7 @@ function MuscleGroupSelection() {
         {muscleGroups.map((muscleGroup, iMG) => {
             const nextMuscleGroup = muscleGroups[iMG + 1] !== undefined ? muscleGroups[iMG + 1] : null;
             return (
-              <div>
+              <div key={iMG}>
                 <button className='mGrpSel' onClick={() => btnMuscleGroupSelection(muscleGroup)}>{_capitalizeWords(muscleGroup)}</button>
                 {nextMuscleGroup && 
                 (<button className='mGrpSel' onClick={() => btnMuscleGroupSelection(nextMuscleGroup)}>{_capitalizeWords(nextMuscleGroup)}</button>)}
@@ -304,11 +304,11 @@ function ExerciseSelection({ selectedMuscleGroup }) {
   const [selectedExercise, setSelectedExercise] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const btnExerciseSelection = (execise) => { setSelectedExercise(execise); };
-
+  
   const _capitalizeWords = (str) => {
     return str.replace(/\b\w/g, (char) => char.toUpperCase());
   };
-
+  
   const addExercise = async (e) => {
     e.preventDefault();
     const { uid } = auth.currentUser;
@@ -321,7 +321,7 @@ function ExerciseSelection({ selectedMuscleGroup }) {
     setExerciseName('');
     setShowPopup(false);
   };
-
+  
   return (
     <div>
       {!selectedExercise && (
@@ -360,7 +360,7 @@ function ExerciseSelection({ selectedMuscleGroup }) {
                 value={exercise}
                 onChange={(e) => setExerciseName(e.target.value)}
                 required
-              />
+                />
               <div className='popup-buttons'>
                 <button type='submit'>Add Exercise</button>
                 <button type='button' onClick={() => setShowPopup(false)}>Cancel</button>
@@ -375,21 +375,32 @@ function ExerciseSelection({ selectedMuscleGroup }) {
 
 function ExercisePage({ exerciseName, selectedMuscleGroup }) {
   const loggedSetsRef = firestore.collection('loggedSets');
+  const { uid } = auth.currentUser;
   const setQuery = loggedSetsRef
     .where('exercise', '==', exerciseName)
     .orderBy('timestamp', 'desc');
-  const [loggedSets] = useCollectionData(setQuery, { idField: 'id' });
+  const [allLoggedSets] = useCollectionData(setQuery, { idField: 'id' });
   const [showSets, setShowSets] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [exerciseSets, setExerciseSets] = useState(new ExerciseSets(exerciseName, selectedMuscleGroup));
   const [bestExerciseSets, setBestExerciseSets] = useState(null);
+  const [loggedSets, setLoggedSets] = useState([])
+
+  // filters on uid
+  useEffect(() => {
+    if (allLoggedSets && allLoggedSets.length) {
+      const filteredSets = allLoggedSets.filter(loggedSet => loggedSet.user === uid);
+      setLoggedSets(filteredSets);
+    }
+  }, [allLoggedSets, uid]); 
 
   useEffect(() => {
     const bestSets = new ExerciseSets(exerciseName, selectedMuscleGroup);
     if (loggedSets && loggedSets.length > 0) { bestSets.importExerciseSets(loggedSets[0].exerciseSets); }
     setExerciseSets(bestSets);
     setBestExerciseSets(bestSets);
-  }, [loggedSets, exerciseName, selectedMuscleGroup]);
+  }, [loggedSets?.[0]?.exerciseSets, exerciseName, selectedMuscleGroup]);
+
 
   const handleUpdateSet = (index, newWeight, newReps) => {
     const updatedExerciseSets = new ExerciseSets(exerciseSets.exercise, selectedMuscleGroup);
@@ -486,11 +497,11 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                         <span className='exerciseTextField'> {exerciseSets.sets[index].weight} kg</span>
                       </div>
                       <button type='button' className='adjust-button' onClick={() => {
-                        handleUpdateSet(index, exerciseSets.sets[index].weight + 5, exerciseSets.sets[index].reps);
-                      }}>+5</button>
-                      <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight - 5, exerciseSets.sets[index].reps);
                       }}>-5</button>
+                      <button type='button' className='adjust-button' onClick={() => {
+                        handleUpdateSet(index, exerciseSets.sets[index].weight + 5, exerciseSets.sets[index].reps);
+                      }}>+5</button>
                     </div>
                     <div className='flex-item'>
                       {/* {index === 0 && <label htmlFor={`reps-input-${index}`}>Reps:</label>} */}
@@ -521,11 +532,11 @@ function ExercisePage({ exerciseName, selectedMuscleGroup }) {
                         <span className='exerciseTextField'> {exerciseSets.sets[index].reps} reps </span>
                       </div>
                       <button type='button' className='adjust-button' onClick={() => {
-                        handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps + 1);
-                      }}>+1</button>
-                      <button type='button' className='adjust-button' onClick={() => {
                         handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps - 1);
                       }}>-1</button>
+                      <button type='button' className='adjust-button' onClick={() => {
+                        handleUpdateSet(index, exerciseSets.sets[index].weight, exerciseSets.sets[index].reps + 1);
+                      }}>+1</button>
                     </div>
                   </div>
                 </div>
