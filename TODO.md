@@ -13,3 +13,4 @@
 13. Comparisons between people
 14. Plots of different kind
 15. Weight Tracking
+16. ExercisePage is so far down -> have to scroll up to reach back button
