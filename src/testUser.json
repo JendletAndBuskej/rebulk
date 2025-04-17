@@ -1,0 +1,41 @@
+{
+    "user": "Kingen",
+    "weigh": [{
+        "weigh": 1,
+        "timeStamp": 2
+    },
+    {
+        "weigh": 3,
+        "timeStamp": 4
+    }],
+    "exercises": [{
+        "id": "id_chest_workout",
+        "name": "bench press",
+        "weightIncrement": 5,
+        "logs": [{
+            "weight": 6,
+            "reps": 7,
+            "timeStamp": 8
+        },
+        {
+            "weight": 9,
+            "reps": 10,
+            "timeStamp": 11
+            }]
+    },
+    {
+        "id": "id_fly",
+        "name": "fly",
+        "weightIncrement": 12,
+        "logs": [{
+            "weight": 13,
+            "reps": 14,
+            "timeStamp": 15
+        },
+        {
+            "weight": 16,
+            "reps": 17,
+            "timeStamp": 18
+        }]
+    }]
+}

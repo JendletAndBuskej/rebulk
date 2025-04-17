@@ -1,37 +1,29 @@
-class Weigh {
-    weigh: number;
-    timeStamp: Date;
+import fs from 'fs';
 
-    constructor(weigh: number, timeStamp: Date) {
-        this.weigh = weigh;
-        this.timeStamp = timeStamp;
-    }
-}
+class UserProfile {
+    user: string;
+    weigh: Weigh[];
+    // workouts: Workout[];
+    exercises: Exercise[];
 
-class ExerciseLog {
-    weigh: number;
-    reps: number;
-    timeStamp: Date;
-
-    constructor(weigh: number, reps: number, timeStamp: Date) {
-        this.weigh = weigh;
-        this.reps = reps;
-        this.timeStamp = timeStamp;
-    }
-}
-
-class Exercise {
-    name: string;
-    logs: ExerciseLog[];
-    weighIncrement: number;
+    // constructor(
+    //     user: string, 
+    //     weigh: Weigh[] = [], 
+    //     workouts: Workout[] = [],
+    //     exercises: Exercise[] = [], 
+    // ) {
+    //     this.user = user;
+    //     this.weigh = weigh;
+    //     // this.workouts = workouts;
+    //     this.exercises = exercises;
+    // }
     
-    constructor(name: string, logs: ExerciseLog[] = [], weighIncrement: number = 5.) {
-        this.name = name;
-        this.logs = logs;
-        this.weighIncrement = weighIncrement;
+    addWeigh(weigh: number) {
+        const newWeigh = new Weigh(weigh, Date.now());
+        this.weigh = [...this.weigh, newWeigh]
     }
 }
-
+    
 class Workout {
     name: string;
     exercises: Exercise[];
@@ -40,34 +32,78 @@ class Workout {
         this.name = name;
         this.exercises = exercises;
     }
+
+    addExerciseToWorkout(exercise: Exercise) {
+        this.exercises = [...this.exercises, exercise]
+    }
+
+    removeExerciseFromWorkout(exerciseIndex: number) {
+        if (exerciseIndex > -1)
+            this.exercises.splice(exerciseIndex, 1);
+    }
 }
 
-class UserProfile {
-    user: string;
-    weigh: Weigh[];
-    workouts: Workout[];
-    exercises: Exercise[];
-
+class Exercise {
+    id: string;
+    name: string;
+    logs: ExerciseLog[];
+    weightIncrement: number;
+    
     constructor(
-        user: string, 
-        weigh: Weigh[] = [], 
-        workouts: Workout[] = [],
-        exercises: Exercise[] = [], 
+        id: string, 
+        name: string, 
+        logs: ExerciseLog[] = [], 
+        weightIncrement: number = 5.
     ) {
-      this.user = user;
-      this.weigh = weigh;
-      this.workouts = workouts;
-      this.exercises = exercises;
-    }
-  
-    loadUser(userData) {
-      this.user = userData.user;
-      this.weigh = userData.weigh;
-      this.exercises = userData.exercises;
+        this.id = id;
+        this.name = name;
+        this.logs = logs;
+        this.weightIncrement = weightIncrement;
     }
     
-    addWeigh() {
-  
+    setWeightIncrement(increment: number) {
+        this.weightIncrement = Math.max(increment, 0);
     }
-  
-  }
+
+    addExerciseLog(weight: number, reps: number, timeStamp: number) {
+        const exerciseLog = new ExerciseLog(weight,reps,timeStamp);
+        this.logs = [...this.logs, exerciseLog]
+    }
+
+    removeExercisLog(logIndex: number) {
+        if (logIndex > -1)
+            this.logs.splice(logIndex, 1);
+            // this.logs = this.logs.splice(logIndex, 1);
+    }
+}
+
+class ExerciseLog {
+    weight: number;
+    reps: number;
+    timeStamp: number;
+
+    constructor(weight: number, reps: number, timeStamp: number) {
+        this.weight = weight;
+        this.reps = reps;
+        this.timeStamp = timeStamp;
+    }
+}
+
+class Weigh {
+    weigh: number;
+    timeStamp: number;
+    constructor(weigh: number, timeStamp: number) {
+        this.weigh = weigh;
+        this.timeStamp = timeStamp;
+    }
+}
+
+function createUserProfileFromJson(jsonPath: string) {
+    const userAsJson = fs.readFileSync(jsonPath, 'utf-8');
+    const userProfile = Object.assign(new UserProfile(),userAsJson)
+    return userProfile
+}
+const userProfile = createUserProfileFromJson('./testUser.json')
+console.log(userProfile)
+userProfile.addWeigh(666)
+console.log(test)

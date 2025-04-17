@@ -12,6 +12,9 @@ import { useCollectionData, useCollection } from 'react-firebase-hooks/firestore
 
 import getAppConfig from './firebaseConfig';
 import getDefaultExercises from './defaultExercises';
+
+import './UserProfile.ts'
+
 const appConfig = getAppConfig();
 firebase.initializeApp(appConfig);
 
