@@ -1,41 +1,113 @@
 {
-    "user": "Kingen",
-    "weigh": [{
-        "weigh": 1,
-        "timeStamp": 2
-    },
-    {
-        "weigh": 3,
-        "timeStamp": 4
-    }],
-    "exercises": [{
-        "id": "id_chest_workout",
-        "name": "bench press",
-        "weightIncrement": 5,
-        "logs": [{
-            "weight": 6,
-            "reps": 7,
-            "timeStamp": 8
-        },
-        {
-            "weight": 9,
-            "reps": 10,
-            "timeStamp": 11
-            }]
-    },
-    {
-        "id": "id_fly",
-        "name": "fly",
-        "weightIncrement": 12,
-        "logs": [{
-            "weight": 13,
-            "reps": 14,
-            "timeStamp": 15
-        },
-        {
-            "weight": 16,
-            "reps": 17,
-            "timeStamp": 18
-        }]
-    }]
-}
+    "users": [
+      {
+        "user": "123", 
+        "userName": "Kingen", 
+        "weigh": [
+          {
+            "weigh": 1,
+            "timeStamp": 2
+          },
+          {
+            "weigh": 3,
+            "timeStamp": 4
+          }
+        ],
+        "exercises": [
+          {
+            "idExercise": "id_chest_workout",
+            "name": "bench press",
+            "weightIncrement": 5,
+            "logs": [
+              {
+                "idLog": "log1",
+                "weight": 6,
+                "reps": 7,
+                "timeStamp": 8
+              },
+              {
+                "idLog": "log2",
+                "weight": 9,
+                "reps": 10,
+                "timeStamp": 11
+              }
+            ]
+          },
+          {
+            "idExercise": "id_fly",
+            "name": "fly",
+            "weightIncrement": 12,
+            "logs": [
+              {
+                "idLog": "log3",
+                "weight": 13,
+                "reps": 14,
+                "timeStamp": 15
+              },
+              {
+                "idLog": "log4",
+                "weight": 16,
+                "reps": 17,
+                "timeStamp": 18
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "user": "456",
+        "userName": "Amanda",
+        "weigh": [
+          {
+            "weigh": 100,
+            "timeStamp": 200
+          },
+          {
+            "weigh": 300,
+            "timeStamp": 400
+          }
+        ],
+        "exercises": [
+          {
+            "idExercise": "id_squat",
+            "name": "squat",
+            "weightIncrement": 500,
+            "logs": [
+              {
+                "idLog": "log5",
+                "weight": 600,
+                "reps": 700,
+                "timeStamp": 800
+              },
+              {
+                "idLog": "log6",
+                "weight": 900,
+                "reps": 1000,
+                "timeStamp": 1100
+              }
+            ]
+          },
+          {
+            "idExercise": "id_leg_extension",
+            "name": "leg extension",
+            "weightIncrement": 1200,
+            "logs": [
+              {
+                "idLog": "log7",
+                "weight": 1300,
+                "reps": 1400,
+                "timeStamp": 1500
+              },
+              {
+                "idLog": "log8",
+                "weight": 1600,
+                "reps": 1700,
+                "timeStamp": 1800
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  

@@ -1,10 +1,48 @@
-import fs from 'fs';
+import usersJson from './testUser.json'
+
+// interfaces
+export interface iUsers {
+    users: iUser[]
+
+    getUserNames(): string | undefined;
+}
+  
+export interface iUser {
+    user: string
+    userName: string
+    weigh: iWeigh[]
+    exercises: iExercise[]
+}
+
+export interface iWeigh {
+    weigh: number
+    timeStamp: number
+}
+
+export interface iExercise {
+    idExercise: string
+    name: string
+    weightIncrement: number
+    logs: iLog[]
+}
+
+export interface iLog {
+    idLog: string
+    weight: number
+    reps: number
+    timeStamp: number
+}
+
+// classes
+class Users {
+    users: UserProfile[] 
+}
 
 class UserProfile {
     user: string;
     weigh: Weigh[];
-    // workouts: Workout[];
     exercises: Exercise[];
+    // workouts: Workout[];
 
     // constructor(
     //     user: string, 
@@ -18,28 +56,9 @@ class UserProfile {
     //     this.exercises = exercises;
     // }
     
-    addWeigh(weigh: number) {
+    public addWeigh(weigh: number) {
         const newWeigh = new Weigh(weigh, Date.now());
         this.weigh = [...this.weigh, newWeigh]
-    }
-}
-    
-class Workout {
-    name: string;
-    exercises: Exercise[];
-
-    constructor(name: string, exercises: Exercise[] = []) {
-        this.name = name;
-        this.exercises = exercises;
-    }
-
-    addExerciseToWorkout(exercise: Exercise) {
-        this.exercises = [...this.exercises, exercise]
-    }
-
-    removeExerciseFromWorkout(exerciseIndex: number) {
-        if (exerciseIndex > -1)
-            this.exercises.splice(exerciseIndex, 1);
     }
 }
 
@@ -64,16 +83,16 @@ class Exercise {
     setWeightIncrement(increment: number) {
         this.weightIncrement = Math.max(increment, 0);
     }
-
+    
     addExerciseLog(weight: number, reps: number, timeStamp: number) {
         const exerciseLog = new ExerciseLog(weight,reps,timeStamp);
         this.logs = [...this.logs, exerciseLog]
     }
-
+    
     removeExercisLog(logIndex: number) {
         if (logIndex > -1)
             this.logs.splice(logIndex, 1);
-            // this.logs = this.logs.splice(logIndex, 1);
+        // this.logs = this.logs.splice(logIndex, 1);
     }
 }
 
@@ -81,7 +100,7 @@ class ExerciseLog {
     weight: number;
     reps: number;
     timeStamp: number;
-
+    
     constructor(weight: number, reps: number, timeStamp: number) {
         this.weight = weight;
         this.reps = reps;
@@ -98,12 +117,37 @@ class Weigh {
     }
 }
 
-function createUserProfileFromJson(jsonPath: string) {
-    const userAsJson = fs.readFileSync(jsonPath, 'utf-8');
-    const userProfile = Object.assign(new UserProfile(),userAsJson)
-    return userProfile
+class Workout {
+    name: string;
+    exercises: Exercise[];
+
+    constructor(name: string, exercises: Exercise[] = []) {
+        this.name = name;
+        this.exercises = exercises;
+    }
+
+    addExerciseToWorkout(exercise: Exercise) {
+        this.exercises = [...this.exercises, exercise]
+    }
+
+    removeExerciseFromWorkout(exerciseIndex: number) {
+        if (exerciseIndex > -1)
+            this.exercises.splice(exerciseIndex, 1);
+    }
 }
-const userProfile = createUserProfileFromJson('./testUser.json')
-console.log(userProfile)
-userProfile.addWeigh(666)
-console.log(test)
+
+// function createUsersProfileFromJson(jsonPath: string) {
+function createUsersProfileFromJson(userAsJson: object) {
+    // const userAsJson = fs.readFileSync(jsonPath, 'utf-8');
+    // const userProfile = Object.assign(new UserProfile(),userAsJson)
+    const userProfiles = Object.assign(new Users(),userAsJson)
+    return userProfiles
+}
+
+// const userProfiles = createUsersProfileFromJson(usersJson)
+// const user = userProfiles.users[0]
+// console.log(userProfiles)
+// console.log(user)
+// console.log(user.addWeigh(666))
+const users: iUsers = usersJson;
+console.log(users)
