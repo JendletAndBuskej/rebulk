@@ -149,5 +149,5 @@ function createUsersProfileFromJson(userAsJson: object) {
 // console.log(userProfiles)
 // console.log(user)
 // console.log(user.addWeigh(666))
-const users: iUsers = usersJson;
-console.log(users)
+// const users: iUsers = usersJson;
+// console.log(users)
