@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { addDoc, collection, query, where } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { db } from '../firebase';
-import { MuscleGroup } from '../data/defaultExercises';
+import { MuscleGroup, formatMuscleGroupLabel } from '../data/defaultExercises';
 import {
   ExerciseOption,
   UserExercise,
@@ -54,34 +54,61 @@ const Dashboard: React.FC<DashboardProps> = ({ uid }) => {
     });
   };
 
-  return (
-    <>
-      <div className="dashboard-grid dashboard-grid--no-workout">
-        <MuscleGroupList
-          activeMuscleGroup={activeMuscleGroup}
-          onSelect={(group) => {
-            setActiveMuscleGroup(group);
-            if (!group) {
-              setActiveExercise(null);
-            }
-          }}
-        />
-        <ExerciseLibrary
-          activeMuscleGroup={activeMuscleGroup}
-          userExercises={userExercises}
-          onSelectExercise={(exercise) => {
-            setActiveMuscleGroup(exercise.muscleGroup);
-            setActiveExercise(exercise);
-          }}
-          onCreateExercise={handleCreateCustomExercise}
-        />
+  const handleSelectMuscleGroup = (group: MuscleGroup | null) => {
+    setActiveMuscleGroup(group);
+    if (!group) {
+      setActiveExercise(null);
+    }
+  };
+
+  if (!activeMuscleGroup) {
+    return (
+      <div className="dashboard-root">
+        <div className="dashboard-groups">
+          <MuscleGroupList activeMuscleGroup={null} onSelect={handleSelectMuscleGroup} />
+        </div>
+      </div>
+    );
+  }
+
+  if (activeExercise) {
+    return (
+      <div className="dashboard-root">
         <ExerciseDetail
           uid={uid}
           exercise={activeExercise}
-          onClose={() => setActiveExercise(null)}
+          onBackToExercises={() => setActiveExercise(null)}
+          onBackToMuscleGroups={() => handleSelectMuscleGroup(null)}
         />
       </div>
-    </>
+    );
+  }
+
+  return (
+    <div className="dashboard-root">
+      <div className="workspace">
+        <section className="panel workspace__header">
+          <button type="button" className="btn-link workspace__back" onClick={() => handleSelectMuscleGroup(null)}>
+            ← Muscle groups
+          </button>
+          <div className="workspace__title">
+            <h2>{formatMuscleGroupLabel(activeMuscleGroup)}</h2>
+            <p className="workspace__subtitle">Pick an exercise to review logs or add a new session.</p>
+          </div>
+        </section>
+        <div className="workspace__columns">
+          <ExerciseLibrary
+            activeMuscleGroup={activeMuscleGroup}
+            userExercises={userExercises}
+            onSelectExercise={(exercise) => setActiveExercise(exercise)}
+            onCreateExercise={handleCreateCustomExercise}
+          />
+          <section className="panel workspace__placeholder">
+            <p>Select an exercise on the left to view its training log.</p>
+          </section>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -8,7 +8,8 @@ import { formatMuscleGroupLabel } from '../../data/defaultExercises';
 interface ExerciseDetailProps {
   uid: string;
   exercise: ExerciseOption | null;
-  onClose: () => void;
+  onBackToExercises: () => void;
+  onBackToMuscleGroups?: () => void;
 }
 
 const DEFAULT_SET_COUNT = 3;
@@ -16,7 +17,7 @@ const DEFAULT_SET_COUNT = 3;
 const createDefaultSets = (count = DEFAULT_SET_COUNT): ExerciseSet[] =>
   Array.from({ length: count }, () => ({ weight: 0, reps: 0 }));
 
-const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onClose }) => {
+const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onBackToExercises, onBackToMuscleGroups }) => {
   const logsQuery = useMemo(() => {
     if (!exercise) {
       return null;
@@ -76,6 +77,11 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onClose 
     }
   }, [expandedLogId, isHistoryVisible, userLogs]);
 
+  useEffect(() => {
+    setIsHistoryVisible(false);
+    setExpandedLogId(null);
+  }, [exercise?.exerciseName]);
+
   const handleUpdateSet = (index: number, key: keyof ExerciseSet, value: number) => {
     setFormSets((prev) => {
       const next = [...prev];
@@ -114,24 +120,40 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onClose 
   if (!exercise) {
     return (
       <section className="panel">
-        <div className="panel__header">
-          <h2>Exercise Detail</h2>
+        <div className="detail__header">
+          <div className="detail__nav">
+            {onBackToMuscleGroups && (
+              <button type="button" className="btn-link" onClick={onBackToMuscleGroups}>
+                ← Muscle groups
+              </button>
+            )}
+          </div>
+          <div className="detail__title">
+            <h2>Exercise Detail</h2>
+            <p className="panel__subtitle">Pick an exercise to view or log sets.</p>
+          </div>
         </div>
-        <p className="panel__empty">Select an exercise to log your sets and view history.</p>
       </section>
     );
   }
 
   return (
     <section className="panel">
-      <div className="panel__header">
-        <div>
+      <div className="detail__header">
+        <div className="detail__nav">
+          <button type="button" className="btn-link" onClick={onBackToExercises}>
+            ← Exercises
+          </button>
+          {onBackToMuscleGroups && (
+            <button type="button" className="btn-link" onClick={onBackToMuscleGroups}>
+              ← Muscle groups
+            </button>
+          )}
+        </div>
+        <div className="detail__title">
           <h2>{exercise.exerciseName}</h2>
           <p className="panel__subtitle">{formatMuscleGroupLabel(exercise.muscleGroup)}</p>
         </div>
-        <button type="button" className="btn btn-tertiary" onClick={onClose}>
-          Clear
-        </button>
       </div>
       <div className="panel__section">
         <h3>New Log</h3>

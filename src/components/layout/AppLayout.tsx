@@ -8,7 +8,6 @@ const AppLayout: React.FC<PropsWithChildren<AppLayoutProps>> = ({ children, titl
   <div className="app-shell">
     <header className="app-header">
       <div className="app-header__brand">
-        <span className="app-header__logo" aria-hidden>💪</span>
         <h1>{title}</h1>
       </div>
     </header>
