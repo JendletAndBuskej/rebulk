@@ -48,6 +48,8 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onClose 
 
   const [formSets, setFormSets] = useState<ExerciseSet[]>(createDefaultSets());
   const [isSaving, setIsSaving] = useState(false);
+  const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
+  const [isHistoryVisible, setIsHistoryVisible] = useState(false);
 
   useEffect(() => {
     if (!exercise) {
@@ -61,6 +63,18 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onClose 
       setFormSets(createDefaultSets());
     }
   }, [bestSets, exercise]);
+
+  useEffect(() => {
+    if (!userLogs.length) {
+      setExpandedLogId(null);
+      setIsHistoryVisible(false);
+      return;
+    }
+
+    if (isHistoryVisible && !expandedLogId) {
+      setExpandedLogId(userLogs[0].id);
+    }
+  }, [expandedLogId, isHistoryVisible, userLogs]);
 
   const handleUpdateSet = (index: number, key: keyof ExerciseSet, value: number) => {
     setFormSets((prev) => {
@@ -160,25 +174,50 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onClose 
         </div>
       </div>
       <div className="panel__section">
-        <h3>History</h3>
-        {loading ? (
+        <div className="panel__header panel__header--sub">
+          <h3>History</h3>
+          <button
+            type="button"
+            className="btn btn-tertiary"
+            onClick={() => setIsHistoryVisible((prev) => !prev)}
+          >
+            {isHistoryVisible ? 'Hide history' : 'Show history'}
+          </button>
+        </div>
+        {!isHistoryVisible ? (
+          <p className="panel__empty">History hidden</p>
+        ) : loading ? (
           <p className="panel__empty">Loading history…</p>
         ) : userLogs.length === 0 ? (
           <p className="panel__empty">No logs yet. Save your first session to build history.</p>
         ) : (
           <div className="history">
-            {userLogs.map((log) => (
-              <div key={log.id} className="history__entry">
-                <h4>{log.timestamp?.toDate().toLocaleString() ?? 'Pending'}</h4>
-                <ul>
-                  {log.exerciseSets.map((set, index) => (
-                    <li key={index}>
-                      {set.weight} kg · {set.reps} reps
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            {userLogs.map((log) => {
+              const isExpanded = log.id === expandedLogId;
+              return (
+                <div key={log.id} className="history__entry">
+                  <button
+                    type="button"
+                    className="history__toggle"
+                    onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
+                  >
+                    <span>{log.timestamp?.toDate().toLocaleString() ?? 'Pending'}</span>
+                    <span className="history__chevron" aria-hidden>
+                      {isExpanded ? '▴' : '▾'}
+                    </span>
+                  </button>
+                  {isExpanded && (
+                    <ul>
+                      {log.exerciseSets.map((set, index) => (
+                        <li key={index}>
+                          {set.weight} kg · {set.reps} reps
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

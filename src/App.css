@@ -273,6 +273,14 @@ textarea {
   gap: 12px;
 }
 
+.panel__header--sub {
+  padding: 0;
+}
+
+.panel__header--sub .btn {
+  padding: 0.4rem 1rem;
+}
+
 .panel__empty {
   padding: 24px;
   text-align: center;
@@ -608,6 +616,28 @@ input[type='number']:focus {
   font-size: 0.95rem;
   margin-bottom: 0.5rem;
   color: rgba(255, 255, 255, 0.84);
+}
+
+.history__toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.history__toggle:hover .history__chevron {
+  color: var(--accent);
+}
+
+.history__chevron {
+  transition: transform var(--transition);
+  font-size: 0.85rem;
 }
 
 .history__entry ul {
