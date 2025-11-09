@@ -283,7 +283,7 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({
         </div>
         {exercise.source === 'custom' && (
           <div className="detail__actions" ref={actionsRef}>
-            <h3>{exercise.exerciseName}</h3>
+            <h3 className="detail__actions-title">{exercise.exerciseName}</h3>
             <button
               type="button"
               className="icon-button detail__actions-trigger"
@@ -307,7 +307,7 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({
                     setIsActionsOpen(false);
                   }}
                   role="menuitem"
-                >
+                  >
                   Rename exercise
                 </button>
                 <button
@@ -324,34 +324,67 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({
           </div>
         )}
         {exercise.source != 'custom' && (
-          <h3>{exercise.exerciseName}</h3>
+          <h3 className="detail__actions-title">{exercise.exerciseName}</h3>
         )}
       </div>
       <div className="panel__section">
         <div className="sets-grid">
           {formSets.map((set, index) => (
-            <div key={index} className="sets-grid__row">
-              <div className="input-group">
-                <label htmlFor={`weight-${index}`}>Weight (kg)</label>
-                <input
-                  id={`weight-${index}`}
-                  type="number"
-                  min={0}
-                  value={set.weight}
-                  onChange={(event) => handleUpdateSet(index, 'weight', Number(event.target.value))}
-                />
+            <React.Fragment key={index}>
+              <div className="sets-grid__row sets-grid__row--compact">
+                <div className="input-group">
+                  <label htmlFor={`weight-${index}`}>Weight (kg)</label>
+                  <input
+                    id={`weight-${index}`}
+                    type="number"
+                    min={0}
+                    value={set.weight}
+                    onChange={(event) => handleUpdateSet(index, 'weight', Number(event.target.value))}
+                  />
+                </div>
+                <div className="input-group">
+                  <label htmlFor={`reps-${index}`}>Reps</label>
+                  <input
+                    id={`reps-${index}`}
+                    type="number"
+                    min={0}
+                    value={set.reps}
+                    onChange={(event) => handleUpdateSet(index, 'reps', Number(event.target.value))}
+                  />
+                </div>
               </div>
-              <div className="input-group">
-                <label htmlFor={`reps-${index}`}>Reps</label>
-                <input
-                  id={`reps-${index}`}
-                  type="number"
-                  min={0}
-                  value={set.reps}
-                  onChange={(event) => handleUpdateSet(index, 'reps', Number(event.target.value))}
-                />
+              <div className="sets-grid__controls">
+                <button
+                  type="button"
+                  className="adjust-button"
+                  onClick={() => handleUpdateSet(index, 'weight', Math.max(set.weight - 1, 0))}
+                >
+                  −1 kg
+                </button>
+                <button
+                  type="button"
+                  className="adjust-button"
+                  onClick={() => handleUpdateSet(index, 'weight', set.weight + 1)}
+                >
+                  +1 kg
+                </button>
+                <button
+                  type="button"
+                  className="adjust-button"
+                  onClick={() => handleUpdateSet(index, 'reps', Math.max(set.reps - 1, 0))}
+                >
+                  −1 rep
+                </button>
+                <button
+                  type="button"
+                  className="adjust-button"
+                  onClick={() => handleUpdateSet(index, 'reps', set.reps + 1)}
+                >
+                  +1 rep
+                </button>
               </div>
-            </div>
+              {index < formSets.length - 1 && <div className="set-row-divider" />}
+            </React.Fragment>
           ))}
         </div>
         <div className="panel__actions">
@@ -400,11 +433,14 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({
                   </button>
                   {isExpanded && (
                     <ul>
-                      {log.exerciseSets.map((set, index) => (
-                        <li key={index}>
-                          {set.weight} kg · {set.reps} reps
-                        </li>
-                      ))}
+                  {log.exerciseSets.map((set, index) => (
+                    <React.Fragment key={index}>
+                      <li>
+                        {set.weight} kg · {set.reps} reps
+                      </li>
+                      {index < log.exerciseSets.length - 1 && <div className="set-row-divider" />}
+                    </React.Fragment>
+                  ))}
                     </ul>
                   )}
                 </div>

@@ -288,6 +288,16 @@ textarea {
   position: relative;
   margin-left: auto;
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail__actions-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  flex: 1;
 }
 
 .detail__actions-trigger {
@@ -300,6 +310,7 @@ textarea {
   transition: background-color var(--transition), color var(--transition);
   font-size: 1.1rem;
   line-height: 1;
+  align-self: flex-end;
 }
 
 .detail__actions-trigger:hover {
@@ -355,6 +366,7 @@ textarea {
   color: var(--danger);
 }
 
+
 .detail__title h2 {
   margin-bottom: 4px;
 }
@@ -368,11 +380,37 @@ textarea {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    gap: 16px;
   }
 
   .detail__title {
     text-align: right;
   }
+}
+
+.detail__header {
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.detail__header .detail__title {
+  flex: 1;
+}
+
+.detail__header .detail__actions {
+  margin-left: 16px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.detail__header .detail__actions .detail__actions-title {
+  flex: 1;
+}
+
+.set-row-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 8px 0;
 }
 
 .form-error {
@@ -724,6 +762,35 @@ input[type='number']:focus {
   .sets-grid__row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+.sets-grid__row--compact {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sets-grid__controls {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+
+.sets-grid__controls .adjust-button {
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  background: rgba(59, 130, 246, 0.18);
+  color: var(--text-primary);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  transition: background-color var(--transition), border-color var(--transition);
+  flex: 1;
+  min-width: 0;
+}
+
+.sets-grid__controls .adjust-button:hover {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.4);
 }
 
 .input-group {
