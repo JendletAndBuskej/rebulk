@@ -1,15 +1,27 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { addDoc, collection, orderBy, query, serverTimestamp, where } from 'firebase/firestore';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  orderBy,
+  query,
+  serverTimestamp,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { db } from '../../firebase';
 import { ExerciseOption, ExerciseSet, LoggedSet } from '../../types';
 import { formatMuscleGroupLabel } from '../../data/defaultExercises';
+import Modal from '../ui/Modal';
 
 interface ExerciseDetailProps {
   uid: string;
   exercise: ExerciseOption | null;
   onBackToExercises: () => void;
   onBackToMuscleGroups?: () => void;
+  onExerciseRenamed: (updatedExercise: ExerciseOption) => void;
 }
 
 const DEFAULT_SET_COUNT = 3;
@@ -17,7 +29,21 @@ const DEFAULT_SET_COUNT = 3;
 const createDefaultSets = (count = DEFAULT_SET_COUNT): ExerciseSet[] =>
   Array.from({ length: count }, () => ({ weight: 0, reps: 0 }));
 
-const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onBackToExercises, onBackToMuscleGroups }) => {
+const titleCase = (value: string) =>
+  value
+    .trim()
+    .replace(/\s+/g, ' ')
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+
+const ExerciseDetail: React.FC<ExerciseDetailProps> = ({
+  uid,
+  exercise,
+  onBackToExercises,
+  onBackToMuscleGroups,
+  onExerciseRenamed,
+}) => {
   const logsQuery = useMemo(() => {
     if (!exercise) {
       return null;
@@ -51,6 +77,14 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onBackTo
   const [isSaving, setIsSaving] = useState(false);
   const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
   const [isHistoryVisible, setIsHistoryVisible] = useState(false);
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [isRenameOpen, setIsRenameOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState('');
+  const [renameError, setRenameError] = useState<string | null>(null);
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [menuError, setMenuError] = useState<string | null>(null);
+  const actionsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!exercise) {
@@ -81,6 +115,24 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onBackTo
     setIsHistoryVisible(false);
     setExpandedLogId(null);
   }, [exercise?.exerciseName]);
+
+  useEffect(() => {
+    setRenameValue(exercise?.exerciseName ?? '');
+    setRenameError(null);
+  }, [exercise?.exerciseName]);
+
+  useEffect(() => {
+    if (!isActionsOpen) {
+      return;
+    }
+    const handleClickAway = (event: MouseEvent) => {
+      if (actionsRef.current && !actionsRef.current.contains(event.target as Node)) {
+        setIsActionsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickAway);
+    return () => document.removeEventListener('mousedown', handleClickAway);
+  }, [isActionsOpen]);
 
   const handleUpdateSet = (index: number, key: keyof ExerciseSet, value: number) => {
     setFormSets((prev) => {
@@ -117,6 +169,85 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onBackTo
     }
   };
 
+  const handleDeleteExercise = async () => {
+    if (!exercise || exercise.source !== 'custom') {
+      return;
+    }
+    setMenuError(null);
+    setIsDeleting(true);
+    try {
+      if (exercise.exerciseId) {
+        await deleteDoc(doc(db, 'exercises', exercise.exerciseId));
+      }
+      if (userLogs.length) {
+        await Promise.all(userLogs.map((log) => deleteDoc(doc(db, 'loggedSets', log.id))));
+      }
+      setIsActionsOpen(false);
+      onBackToExercises();
+    } catch (error) {
+      console.error('Error deleting exercise', error);
+      setMenuError('Unable to delete exercise. Please try again.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleRenameExercise = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!exercise || exercise.source !== 'custom') {
+      return;
+    }
+    const formattedName = titleCase(renameValue);
+    if (!formattedName) {
+      setRenameError('Name is required.');
+      return;
+    }
+    if (formattedName === exercise.exerciseName) {
+      setIsRenameOpen(false);
+      return;
+    }
+
+    setRenameError(null);
+    setIsRenaming(true);
+    try {
+      if (exercise.exerciseId) {
+        await updateDoc(doc(db, 'exercises', exercise.exerciseId), {
+          exercise: formattedName,
+        });
+      }
+      if (userLogs.length) {
+        await Promise.all(
+          userLogs.map((log) =>
+            updateDoc(doc(db, 'loggedSets', log.id), {
+              exercise: formattedName,
+            }),
+          ),
+        );
+      }
+      const updatedExercise: ExerciseOption = {
+        ...exercise,
+        exerciseName: formattedName,
+      };
+      onExerciseRenamed(updatedExercise);
+      setIsRenameOpen(false);
+      setIsActionsOpen(false);
+    } catch (error) {
+      console.error('Error renaming exercise', error);
+      setRenameError('Unable to rename exercise. Please try again.');
+    } finally {
+      setIsRenaming(false);
+    }
+  };
+
+  const closeRenameModal = () => {
+    if (isRenaming) {
+      return;
+    }
+    setIsRenameOpen(false);
+    setRenameValue(exercise?.exerciseName ?? '');
+    setRenameError(null);
+  };
+
   if (!exercise) {
     return (
       <section className="panel">
@@ -150,9 +281,53 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onBackTo
             ← Exercises
           </button>
         </div>
+        {exercise.source === 'custom' && (
+          <div className="detail__actions" ref={actionsRef}>
+            <h3>{exercise.exerciseName}</h3>
+            <button
+              type="button"
+              className="icon-button detail__actions-trigger"
+              onClick={() => {
+                setMenuError(null);
+                setIsActionsOpen((prev) => !prev);
+              }}
+              aria-haspopup="true"
+              aria-expanded={isActionsOpen}
+            >
+              ⋮
+            </button>
+            {isActionsOpen && (
+              <div className="detail__menu" role="menu">
+                {menuError && <p className="detail__menu-error">{menuError}</p>}
+                <button
+                  type="button"
+                  className="detail__menu-item"
+                  onClick={() => {
+                    setIsRenameOpen(true);
+                    setIsActionsOpen(false);
+                  }}
+                  role="menuitem"
+                >
+                  Rename exercise
+                </button>
+                <button
+                  type="button"
+                  className="detail__menu-item detail__menu-item--danger"
+                  onClick={handleDeleteExercise}
+                  disabled={isDeleting}
+                  role="menuitem"
+                >
+                  {isDeleting ? 'Deleting…' : 'Delete exercise'}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+        {exercise.source != 'custom' && (
+          <h3>{exercise.exerciseName}</h3>
+        )}
       </div>
       <div className="panel__section">
-        <h3>{exercise.exerciseName}</h3>
         <div className="sets-grid">
           {formSets.map((set, index) => (
             <div key={index} className="sets-grid__row">
@@ -202,7 +377,6 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onBackTo
           </button>
         </div>
         {!isHistoryVisible ? (
-          //<p className="panel__empty">History hidden</p>
           <div></div>
         ) : loading ? (
           <p className="panel__empty">Loading history…</p>
@@ -239,6 +413,27 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onBackTo
           </div>
         )}
       </div>
+      <Modal title="Rename Exercise" isOpen={isRenameOpen} onClose={closeRenameModal} size="sm">
+        <form className="form-vertical" onSubmit={handleRenameExercise}>
+          <label htmlFor="rename-exercise">Exercise name</label>
+          <input
+            id="rename-exercise"
+            type="text"
+            value={renameValue}
+            onChange={(event) => setRenameValue(event.target.value)}
+            disabled={isRenaming}
+          />
+          {renameError && <p className="form-error">{renameError}</p>}
+          <div className="modal__footer">
+            <button type="button" className="btn btn-tertiary" onClick={closeRenameModal} disabled={isRenaming}>
+              Cancel
+            </button>
+            <button type="submit" className="btn btn-primary" disabled={isRenaming}>
+              {isRenaming ? 'Saving…' : 'Save'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </section>
   );
 };

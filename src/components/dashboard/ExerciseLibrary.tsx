@@ -31,8 +31,11 @@ const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
     }
     return userExercises
       .filter((exercise) => exercise.musclegroup === activeMuscleGroup)
-      .map((exercise) => exercise.exercise)
-      .sort();
+      .map((exercise) => ({
+        id: exercise.id,
+        name: exercise.exercise,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [activeMuscleGroup, userExercises]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -56,26 +59,6 @@ const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
   }
 
   return (
-    /*<div className="detail__header">
-        <div className="detail__nav">
-          <button type="button" className="btn-link" onClick={onBackToExercises}>
-            ← Exercises
-          </button>
-          {onBackToMuscleGroups && (
-            <button type="button" className="btn-link" onClick={onBackToMuscleGroups}>
-              ← Muscle groups
-            </button>
-          )}
-        </div>
-        <div className="detail__title">
-          <h2>{exercise.exerciseName}</h2>
-          <p className="panel__subtitle">{formatMuscleGroupLabel(exercise.muscleGroup)}</p>
-        </div>
-      </div>
-      <div className="panel__section">
-        <h3>New Log</h3>
-        </div>
-      */
     <section className="panel">
       <div className="panel__header">
         {onBackToMuscleGroups && (
@@ -85,14 +68,20 @@ const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
         )}
       </div>
       <div className="panel__section">
-        <h3>{formatMuscleGroupLabel(activeMuscleGroup)} Exercises</h3>
+        <h2>{formatMuscleGroupLabel(activeMuscleGroup)} Exercises</h2>
         <div className="chips">
           {defaultExercises.map((exercise) => (
             <button
               type="button"
               key={exercise}
               className="chip"
-              onClick={() => onSelectExercise({ exerciseName: exercise, muscleGroup: activeMuscleGroup })}
+              onClick={() =>
+                onSelectExercise({
+                  exerciseName: exercise,
+                  muscleGroup: activeMuscleGroup,
+                  source: 'default',
+                })
+              }
             >
               {exercise}
             </button>
@@ -108,11 +97,18 @@ const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
             {customExercises.map((exercise) => (
               <button
                 type="button"
-                key={exercise}
+                key={exercise.id}
                 className="chip chip--accent"
-                onClick={() => onSelectExercise({ exerciseName: exercise, muscleGroup: activeMuscleGroup })}
+                onClick={() =>
+                  onSelectExercise({
+                    exerciseName: exercise.name,
+                    muscleGroup: activeMuscleGroup,
+                    source: 'custom',
+                    exerciseId: exercise.id,
+                  })
+                }
               >
-                {exercise}
+                {exercise.name}
               </button>
             ))}
           </div>

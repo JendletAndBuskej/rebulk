@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { addDoc, collection, query, where } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { db } from '../firebase';
-import { MuscleGroup, formatMuscleGroupLabel } from '../data/defaultExercises';
+import { MuscleGroup } from '../data/defaultExercises';
 import {
   ExerciseOption,
   UserExercise,
@@ -79,6 +79,7 @@ const Dashboard: React.FC<DashboardProps> = ({ uid }) => {
           exercise={activeExercise}
           onBackToExercises={() => setActiveExercise(null)}
           onBackToMuscleGroups={() => handleSelectMuscleGroup(null)}
+          onExerciseRenamed={(updated) => setActiveExercise(updated)}
         />
       </div>
     );

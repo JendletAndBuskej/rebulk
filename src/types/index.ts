@@ -4,6 +4,8 @@ import { MuscleGroup } from '../data/defaultExercises';
 export interface ExerciseOption {
   exerciseName: string;
   muscleGroup: MuscleGroup;
+  source: 'default' | 'custom';
+  exerciseId?: string;
 }
 
 export interface ExerciseSet {

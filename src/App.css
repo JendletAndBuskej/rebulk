@@ -246,6 +246,8 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-width: 960px;
+  margin: 0 auto;
 }
 
 .workspace__columns {
@@ -282,6 +284,77 @@ textarea {
   gap: 16px;
 }
 
+.detail__actions {
+  position: relative;
+  margin-left: auto;
+  display: flex;
+}
+
+.detail__actions-trigger {
+  padding: 6px 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color var(--transition), color var(--transition);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.detail__actions-trigger:hover {
+  background: rgba(59, 130, 246, 0.18);
+  color: var(--text-primary);
+}
+
+.detail__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 20;
+}
+
+.detail__menu-item {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  text-align: left;
+  padding: 8px 0;
+  cursor: pointer;
+  transition: color var(--transition);
+}
+
+.detail__menu-item:hover {
+  color: var(--accent);
+}
+
+.detail__menu-item:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.detail__menu-item--danger {
+  color: var(--danger);
+}
+
+.detail__menu-item--danger:hover {
+  color: var(--danger-strong);
+}
+
+.detail__menu-error {
+  font-size: 0.85rem;
+  color: var(--danger);
+}
+
 .detail__title h2 {
   margin-bottom: 4px;
 }
@@ -300,6 +373,11 @@ textarea {
   .detail__title {
     text-align: right;
   }
+}
+
+.form-error {
+  color: var(--danger);
+  font-size: 0.85rem;
 }
 
 .panel {
