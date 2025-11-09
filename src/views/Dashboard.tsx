@@ -87,25 +87,14 @@ const Dashboard: React.FC<DashboardProps> = ({ uid }) => {
   return (
     <div className="dashboard-root">
       <div className="workspace">
-        <section className="panel workspace__header">
-          <button type="button" className="btn-link workspace__back" onClick={() => handleSelectMuscleGroup(null)}>
-            ← Muscle groups
-          </button>
-          <div className="workspace__title">
-            <h2>{formatMuscleGroupLabel(activeMuscleGroup)}</h2>
-            <p className="workspace__subtitle">Pick an exercise to review logs or add a new session.</p>
-          </div>
-        </section>
         <div className="workspace__columns">
           <ExerciseLibrary
             activeMuscleGroup={activeMuscleGroup}
             userExercises={userExercises}
             onSelectExercise={(exercise) => setActiveExercise(exercise)}
             onCreateExercise={handleCreateCustomExercise}
+            onBackToMuscleGroups={() => handleSelectMuscleGroup(null)}
           />
-          <section className="panel workspace__placeholder">
-            <p>Select an exercise on the left to view its training log.</p>
-          </section>
         </div>
       </div>
     </div>

@@ -141,22 +141,18 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onBackTo
     <section className="panel">
       <div className="detail__header">
         <div className="detail__nav">
-          <button type="button" className="btn-link" onClick={onBackToExercises}>
-            ← Exercises
-          </button>
           {onBackToMuscleGroups && (
             <button type="button" className="btn-link" onClick={onBackToMuscleGroups}>
               ← Muscle groups
             </button>
           )}
-        </div>
-        <div className="detail__title">
-          <h2>{exercise.exerciseName}</h2>
-          <p className="panel__subtitle">{formatMuscleGroupLabel(exercise.muscleGroup)}</p>
+          <button type="button" className="btn-link" onClick={onBackToExercises}>
+            ← Exercises
+          </button>
         </div>
       </div>
       <div className="panel__section">
-        <h3>New Log</h3>
+        <h3>{exercise.exerciseName}</h3>
         <div className="sets-grid">
           {formSets.map((set, index) => (
             <div key={index} className="sets-grid__row">
@@ -197,7 +193,6 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onBackTo
       </div>
       <div className="panel__section">
         <div className="panel__header panel__header--sub">
-          <h3>History</h3>
           <button
             type="button"
             className="btn btn-tertiary"
@@ -207,7 +202,8 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ uid, exercise, onBackTo
           </button>
         </div>
         {!isHistoryVisible ? (
-          <p className="panel__empty">History hidden</p>
+          //<p className="panel__empty">History hidden</p>
+          <div></div>
         ) : loading ? (
           <p className="panel__empty">Loading history…</p>
         ) : userLogs.length === 0 ? (

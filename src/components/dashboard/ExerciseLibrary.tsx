@@ -7,6 +7,7 @@ interface ExerciseLibraryProps {
   userExercises: UserExercise[];
   onSelectExercise: (exercise: ExerciseOption) => void;
   onCreateExercise: (muscleGroup: MuscleGroup, exerciseName: string) => Promise<void>;
+  onBackToMuscleGroups?: () => void;
 }
 
 const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
@@ -14,6 +15,7 @@ const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
   userExercises,
   onSelectExercise,
   onCreateExercise,
+  onBackToMuscleGroups,
 }) => {
   const [newExerciseName, setNewExerciseName] = useState('');
   const defaultExercises = useMemo(() => {
@@ -54,12 +56,36 @@ const ExerciseLibrary: React.FC<ExerciseLibraryProps> = ({
   }
 
   return (
-    <section className="panel">
-      <div className="panel__header">
-        <h2>{formatMuscleGroupLabel(activeMuscleGroup)} Exercises</h2>
+    /*<div className="detail__header">
+        <div className="detail__nav">
+          <button type="button" className="btn-link" onClick={onBackToExercises}>
+            ← Exercises
+          </button>
+          {onBackToMuscleGroups && (
+            <button type="button" className="btn-link" onClick={onBackToMuscleGroups}>
+              ← Muscle groups
+            </button>
+          )}
+        </div>
+        <div className="detail__title">
+          <h2>{exercise.exerciseName}</h2>
+          <p className="panel__subtitle">{formatMuscleGroupLabel(exercise.muscleGroup)}</p>
+        </div>
       </div>
       <div className="panel__section">
-        <h3>Default</h3>
+        <h3>New Log</h3>
+        </div>
+      */
+    <section className="panel">
+      <div className="panel__header">
+        {onBackToMuscleGroups && (
+          <button type="button" className="btn-link" onClick={onBackToMuscleGroups}>
+            ← Muscle groups
+          </button>
+        )}
+      </div>
+      <div className="panel__section">
+        <h3>{formatMuscleGroupLabel(activeMuscleGroup)} Exercises</h3>
         <div className="chips">
           {defaultExercises.map((exercise) => (
             <button

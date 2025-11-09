@@ -245,22 +245,7 @@ textarea {
 .workspace {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-}
-
-.workspace__header {
-  display: flex;
-  flex-direction: column;
   gap: 16px;
-}
-
-.workspace__title h2 {
-  margin-bottom: 4px;
-}
-
-.workspace__subtitle {
-  font-size: 0.95rem;
-  color: var(--text-secondary);
 }
 
 .workspace__columns {
@@ -270,19 +255,12 @@ textarea {
 
 .workspace__placeholder {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 16px;
   justify-content: center;
   text-align: center;
   color: var(--text-secondary);
-  min-height: 280px;
-}
-
-@media (min-width: 600px) {
-  .workspace__header {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
+  min-height: 320px;
 }
 
 @media (min-width: 992px) {
