@@ -336,20 +336,49 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({
                   <label htmlFor={`weight-${index}`}>Weight (kg)</label>
                   <input
                     id={`weight-${index}`}
-                    type="number"
-                    min={0}
-                    value={set.weight}
-                    onChange={(event) => handleUpdateSet(index, 'weight', Number(event.target.value))}
+                    type="text"
+                    inputMode="decimal"
+                    value={set.weight === 0 ? '' : set.weight.toString()}
+                    onChange={(event) => {
+                      const raw = event.target.value;
+                      if (/^\d*\.?\d{0,2}$/.test(raw)) {
+                        const normalized =
+                          raw === '' || raw === '.' ? raw : parseFloat(raw).toString();
+                        handleUpdateSet(index, 'weight', normalized === '' || normalized === '.' ? 0 : parseFloat(normalized));
+                      }
+                    }}
+                    onBlur={(event) => {
+                      const raw = event.target.value;
+                      if (raw === '' || raw === '.') {
+                        handleUpdateSet(index, 'weight', 0);
+                      } else {
+                        handleUpdateSet(index, 'weight', parseFloat(parseFloat(raw).toFixed(2)));
+                      }
+                    }}
                   />
                 </div>
                 <div className="input-group">
                   <label htmlFor={`reps-${index}`}>Reps</label>
                   <input
                     id={`reps-${index}`}
-                    type="number"
-                    min={0}
-                    value={set.reps}
-                    onChange={(event) => handleUpdateSet(index, 'reps', Number(event.target.value))}
+                    type="text"
+                    inputMode="numeric"
+                    value={set.reps === 0 ? '' : set.reps.toString()}
+                    onChange={(event) => {
+                      const raw = event.target.value;
+                      if (/^\d*$/.test(raw)) {
+                        const normalized = raw === '' ? raw : parseInt(raw, 10).toString();
+                        handleUpdateSet(index, 'reps', normalized === '' ? 0 : parseInt(normalized, 10));
+                      }
+                    }}
+                    onBlur={(event) => {
+                      const raw = event.target.value;
+                      if (raw === '') {
+                        handleUpdateSet(index, 'reps', 0);
+                      } else {
+                        handleUpdateSet(index, 'reps', parseInt(raw, 10));
+                      }
+                    }}
                   />
                 </div>
               </div>
