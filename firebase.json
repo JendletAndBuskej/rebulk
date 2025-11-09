@@ -4,6 +4,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
+    "site": "rebulk-e126f",
     "public": "build",
     "ignore": [
       "firebase.json",
