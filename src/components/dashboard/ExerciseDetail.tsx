@@ -13,7 +13,6 @@ import {
 import { useCollection } from 'react-firebase-hooks/firestore';
 import { db } from '../../firebase';
 import { ExerciseOption, ExerciseSet, LoggedSet } from '../../types';
-import { formatMuscleGroupLabel } from '../../data/defaultExercises';
 import Modal from '../ui/Modal';
 
 interface ExerciseDetailProps {
@@ -69,7 +68,7 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({
 
   const userLogs = useMemo(() => logs.filter((log) => log.user === uid), [logs, uid]);
 
-  const latestLog = useMemo(() => userLogs[0] ?? logs[0] ?? null, [logs, userLogs]);
+  const latestLog = useMemo(() => userLogs[0] ?? null, [userLogs]);
 
   const bestSets = latestLog?.exerciseSets ?? null;
 
@@ -426,17 +425,17 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({
           <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={isSaving}>
             {isSaving ? 'Saving…' : 'Save Log'}
           </button>
-        </div>
-      </div>
-      <div className="panel__section">
-        <div className="panel__header panel__header--sub">
           <button
             type="button"
             className="btn btn-tertiary"
             onClick={() => setIsHistoryVisible((prev) => !prev)}
           >
-            {isHistoryVisible ? 'Hide history' : 'Show history'}
+            {isHistoryVisible ? 'Hide logs' : 'Show logs'}
           </button>
+        </div>
+      </div>
+      <div className="panel__section">
+        <div className="panel__header panel__header--sub">
         </div>
         {!isHistoryVisible ? (
           <div></div>

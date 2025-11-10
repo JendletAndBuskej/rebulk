@@ -11,6 +11,7 @@ import {
 import MuscleGroupList from '../components/dashboard/MuscleGroupList';
 import ExerciseLibrary from '../components/dashboard/ExerciseLibrary';
 import ExerciseDetail from '../components/dashboard/ExerciseDetail';
+import WeightTracker from '../components/dashboard/WeightTracker';
 
 interface DashboardProps {
   uid: string;
@@ -74,13 +75,15 @@ const Dashboard: React.FC<DashboardProps> = ({ uid }) => {
   if (activeExercise) {
     return (
       <div className="dashboard-root">
-        <ExerciseDetail
-          uid={uid}
-          exercise={activeExercise}
-          onBackToExercises={() => setActiveExercise(null)}
-          onBackToMuscleGroups={() => handleSelectMuscleGroup(null)}
-          onExerciseRenamed={(updated) => setActiveExercise(updated)}
-        />
+        <div className="workspace">
+          <ExerciseDetail
+            uid={uid}
+            exercise={activeExercise}
+            onBackToExercises={() => setActiveExercise(null)}
+            onBackToMuscleGroups={() => handleSelectMuscleGroup(null)}
+            onExerciseRenamed={(updated) => setActiveExercise(updated)}
+          />
+        </div>
       </div>
     );
   }

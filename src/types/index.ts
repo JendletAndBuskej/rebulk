@@ -35,3 +35,13 @@ export interface UserExercise extends UserExerciseDocument {
   id: string;
 }
 
+export interface WeighInDocument {
+  user: string;
+  weight: number;
+  timestamp: Timestamp | null;
+}
+
+export interface WeighIn extends WeighInDocument {
+  id: string;
+}
+
